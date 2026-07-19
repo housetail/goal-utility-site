@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Individual Income Tax Calculator for Expats — China Finance Tools</title>
+  <meta name="description" content="Estimate monthly individual income tax in China for expats using the 7-tier progressive bracket and the RMB 5,000 threshold." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Individual Income Tax Calculator for Expats","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate monthly individual income tax in China for expats using the 7-tier progressive bracket and the RMB 5,000 threshold." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"Who must pay Chinese IIT?","acceptedAnswer":{"@type":"Answer","text":"Anyone earning China-sourced income who meets the tax-resident or source rules; expats working in China are generally taxed on China-sourced income."}}, {"@type":"Question","name":"What is the RMB 5,000 threshold?","acceptedAnswer":{"@type":"Answer","text":"It is the standard monthly comprehensive deduction (RMB 60,000/year) applied before tax."}}, {"@type":"Question","name":"Do tax treaties help?","acceptedAnswer":{"@type":"Answer","text":"Yes, China has treaties that may reduce or exempt tax for temporary visitors; the 183-day and 6-year rules matter."}}, {"@type":"Question","name":"Is there a separate capital gains tax?","acceptedAnswer":{"@type":"Answer","text":"Individual gains from A-shares are currently exempt; other gains may be taxed."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Income Tax Calculator (Expats)</h1><p class="lede">Estimate the individual income tax (IIT) withheld on a China-sourced salary using the standard RMB 5,000 monthly deduction.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Monthly salary before tax (CNY)
+          <input type="number" id="salary" name="salary" min="0" step="0.01" value="30000" required />
+          <span class="hint">Your gross monthly salary in RMB, before any deductions.</span>
+        </label>
+        <label class="field">Monthly tax-exempt allowances — housing / meal etc. (CNY)
+          <input type="number" id="allowances" name="allowances" min="0" step="0.01" value="0" />
+          <span class="hint">Employer-provided allowances that are exempt from IIT (e.g. housing, meal).</span>
+        </label>
+        <button type="submit" class="btn">Calculate tax</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>Who must pay Chinese IIT?</summary><p>Anyone earning China-sourced income who meets the tax-resident or source rules; expats working in China are generally taxed on China-sourced income.</p></details>
+      <details><summary>What is the RMB 5,000 threshold?</summary><p>It is the standard monthly comprehensive deduction (RMB 60,000/year) applied before tax.</p></details>
+      <details><summary>Do tax treaties help?</summary><p>Yes, China has treaties that may reduce or exempt tax for temporary visitors; the 183-day and 6-year rules matter.</p></details>
+      <details><summary>Is there a separate capital gains tax?</summary><p>Individual gains from A-shares are currently exempt; other gains may be taxed.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var cny = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY' });
+      // Monthly progressive brackets: [upper bound, rate, quick deduction]
+      // upper bound is inclusive; use Infinity for the top tier.
+      var brackets = [
+        { up: 3000,    rate: 0.03, qd: 0 },
+        { up: 12000,   rate: 0.10, qd: 210 },
+        { up: 25000,   rate: 0.20, qd: 1410 },
+        { up: 35000,   rate: 0.25, qd: 2660 },
+        { up: 55000,   rate: 0.30, qd: 4410 },
+        { up: 80000,   rate: 0.35, qd: 7160 },
+        { up: Infinity, rate: 0.45, qd: 15160 }
+      ];
+
+      function monthlyTax(taxable) {
+        for (var i = 0; i < brackets.length; i++) {
+          if (taxable <= brackets[i].up) {
+            return taxable * brackets[i].rate - brackets[i].qd;
+          }
+        }
+        return 0;
+      }
+
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var salary = parseFloat(document.getElementById('salary').value);
+        var allowances = parseFloat(document.getElementById('allowances').value) || 0;
+
+        if (isNaN(salary) || salary < 0) {
+          result.innerHTML = '<p class="note">Please enter a valid monthly salary.</p>';
+          return;
+        }
+
+        var taxable = Math.max(0, salary - 5000 - allowances);
+        var tax = monthlyTax(taxable);
+        if (tax < 0) tax = 0;
+        var effective = salary > 0 ? (tax / salary) * 100 : 0;
+        var annualTax = tax * 12;
+
+        result.innerHTML =
+          '<p class="big">' + cny.format(tax) + ' <span style="font-size:14px;font-weight:600;color:var(--muted)">per month</span></p>' +
+          '<table>' +
+            '<tr><td>Taxable income (after RMB 5,000 threshold &amp; allowances)</td><td>' + cny.format(taxable) + '</td></tr>' +
+            '<tr><td>Monthly IIT</td><td>' + cny.format(tax) + '</td></tr>' +
+            '<tr><td>Effective rate (tax ÷ gross salary)</td><td>' + effective.toFixed(2) + '%</td></tr>' +
+            '<tr><td>Estimated annual IIT</td><td>' + cny.format(annualTax) + '</td></tr>' +
+          '</table>' +
+          '<p class="note">This is a simplified monthly estimate using the standard RMB 5,000 deduction only. Actual withholding also deducts social insurance (五险一金) and special additional deductions, and annual reconciliation may differ. Tax rules change — verify with the latest SAT regulations or a qualified advisor.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

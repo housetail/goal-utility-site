@@ -1,154 +1,124 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="实用工具集合：汇率换算、房贷月供计算、旅行预算规划" />
-    <meta name="google-adsense-account" content="ca-pub-8247564773527384">
-    <title>优选工具盒 - 汇率换算 房贷计算 旅行预算</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384"
-     crossorigin="anonymous"></script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Finance Tools — Calculators for Chinese-Specific Markets</title>
+  <meta name="description" content="Free English calculators that explain Chinese-specific finance: LPR mortgages, the $50,000 forex quota, A-share price limits, expat income tax, and more." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="./assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "China Finance Tools",
+    "url": "https://housetail.github.io/",
+    "description": "English calculators explaining Chinese-specific financial rules."
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav">
+      <a href="#currency">Currency</a>
+      <a href="#market">A-Share</a>
+      <a href="#property">Property</a>
+      <a href="#tax">Tax</a>
+    </nav>
+  </header>
 
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="branding">
-        <h1>优选工具盒</h1>
-        <p>三款高效工具，助你快速完成关键决策</p>
-      </div>
-      <nav class="nav-links">
-        <a href="#fx-tool">汇率换算</a>
-        <a href="#mortgage-tool">房贷计算</a>
-        <a href="#travel-tool">旅行预算</a>
-      </nav>
-    </header>
+  <section class="hub-hero">
+    <span class="eyebrow">China-specific finance, in plain English</span>
+    <h1>China Finance Tools</h1>
+    <p>Understand Chinese mortgages, the $50,000 forex quota, A-share price limits, and expat taxes — with free calculators built for English speakers.</p>
+  </section>
 
-    <section class="hero">
-      <div class="hero-copy">
-        <h2>立即使用，无需下载，无需登录</h2>
-        <p>实时汇率更新、专业房贷计算、智能旅行预算，一站式完成。</p>
-        <button class="primary-btn" onclick="document.querySelector('#fx-tool').scrollIntoView({ behavior: 'smooth' })">
-          开始使用
-        </button>
-      </div>
-      <div class="hero-ad" aria-label="广告位：顶部横幅">
-        <ins class="adsbygoogle ad-top"
-          style="display:block"
-          data-ad-client="ca-pub-8247564773527384"
-          data-ad-slot="8137669998"
-          data-ad-format="auto"
-          data-full-width-responsive="true"></ins>
+  <div class="wrap">
+
+    <section class="cluster" id="currency">
+      <div class="cluster-head"><h2>Currency &amp; Capital Controls</h2><span>RMB, FX quota, onshore vs offshore</span></div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./tools/china-forex-quota-calculator.html">
+          <div class="ic">💱</div><h3>Forex Quota Calculator</h3>
+          <p>See how much of your $50,000 annual FX quota remains.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-rmb-exchange-rate.html">
+          <div class="ic">🔁</div><h3>RMB Exchange Rate</h3>
+          <p>Convert currencies and learn the PBOC central parity rate.</p>
+        </a>
+        <a class="tool-card" href="./tools/cny-vs-cnh.html">
+          <div class="ic">🌐</div><h3>CNY vs CNH</h3>
+          <p>Compare onshore and offshore RMB with the live spread.</p>
+        </a>
       </div>
     </section>
 
-    <main class="content">
-      <aside class="sidebar-ad" aria-label="广告位：侧边栏">
-        <ins class="adsbygoogle ad-side"
-          style="display:block"
-          data-ad-client="ca-pub-8247564773527384"
-          data-ad-slot="8137669998"
-          data-ad-format="auto"
-          data-full-width-responsive="true"></ins>
-      </aside>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
 
-      <section class="tools">
-        <article id="fx-tool" class="tool-card">
-          <header>
-            <h3>全球汇率换算器</h3>
-            <p>基于最新外汇行情，支持 150+ 货币互换。</p>
-          </header>
-          <form id="fx-form" class="tool-form">
-            <label>
-              输入金额
-              <input type="number" id="fx-amount" min="0" step="0.01" value="100" required />
-            </label>
-            <label>
-              原始货币
-              <select id="fx-from"></select>
-            </label>
-            <label>
-              目标货币
-              <select id="fx-to"></select>
-            </label>
-            <button type="submit" class="primary-btn">立即换算</button>
-          </form>
-          <div id="fx-result" class="tool-result" role="status" aria-live="polite"></div>
-        </article>
-
-        <article id="mortgage-tool" class="tool-card">
-          <header>
-            <h3>房贷月供计算器</h3>
-            <p>快速估算月供、总利息与还款总额，支持等额本息。</p>
-          </header>
-          <form id="mortgage-form" class="tool-form">
-            <label>
-              贷款总额（元）
-              <input type="number" id="mortgage-principal" min="1" step="1000" value="1000000" required />
-            </label>
-            <label>
-              年利率（%）
-              <input type="number" id="mortgage-rate" min="0" max="100" step="0.01" value="4.5" required />
-            </label>
-            <label>
-              贷款年限（年）
-              <input type="number" id="mortgage-years" min="1" max="40" step="1" value="30" required />
-            </label>
-            <button type="submit" class="primary-btn">计算月供</button>
-          </form>
-          <div id="mortgage-result" class="tool-result" role="status" aria-live="polite"></div>
-        </article>
-
-        <article id="travel-tool" class="tool-card">
-          <header>
-            <h3>旅行预算规划器</h3>
-            <p>输入旅行信息，快速获得总预算、人均花费与应急金建议。</p>
-          </header>
-          <form id="travel-form" class="tool-form">
-            <label>
-              旅行天数
-              <input type="number" id="travel-days" min="1" step="1" value="7" required />
-            </label>
-            <label>
-              同行人数
-              <input type="number" id="travel-persons" min="1" step="1" value="2" required />
-            </label>
-            <label>
-              每人每日预算（元）
-              <input type="number" id="travel-daily" min="0" step="50" value="500" required />
-            </label>
-            <label>
-              应急金比例（%）
-              <input type="number" id="travel-emergency" min="0" max="100" step="5" value="15" required />
-            </label>
-            <button type="submit" class="primary-btn">生成预算</button>
-          </form>
-          <div id="travel-result" class="tool-result" role="status" aria-live="polite"></div>
-        </article>
-      </section>
-    </main>
-
-    <section class="cta">
-      <h2>收藏本站，随时查阅工具</h2>
-      <p>加入书签或订阅更新，获取更多实用工具上线信息。</p>
-      <form class="cta-form">
-        <label>
-          邮箱地址
-          <input type="email" placeholder="your@email.com" required />
-        </label>
-        <button type="submit" class="primary-btn">订阅更新</button>
-      </form>
+    <section class="cluster" id="market">
+      <div class="cluster-head"><h2>A-Share Market</h2><span>Limits, calendar, China vs US</span></div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./tools/a-share-price-limit.html">
+          <div class="ic">📈</div><h3>A-Share Price Limit</h3>
+          <p>Compute daily limit-up and limit-down prices.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-trading-calendar.html">
+          <div class="ic">🗓️</div><h3>Trading Calendar</h3>
+          <p>Find the next A-share trading day, with 调休 accounted for.</p>
+        </a>
+        <a class="tool-card" href="./tools/a-share-vs-us-stocks.html">
+          <div class="ic">⚖️</div><h3>A-Share vs US Stocks</h3>
+          <p>Compare China A-share and US stock trading rules.</p>
+        </a>
+      </div>
     </section>
 
-    <footer class="site-footer">
-      <small>© 2026 优选工具盒 · 使用前请确认数据准确性 · <a href="#">隐私政策</a></small>
-    </footer>
+    <section class="cluster" id="property">
+      <div class="cluster-head"><h2>Real Estate &amp; Mortgage</h2><span>LPR loans, down payment, 公积金</span></div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./tools/china-mortgage-calculator.html">
+          <div class="ic">🏠</div><h3>Mortgage Calculator</h3>
+          <p>Estimate your LPR mortgage payment and compare methods.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-down-payment-calculator.html">
+          <div class="ic">💰</div><h3>Down Payment Calculator</h3>
+          <p>Estimate required down payment by city and home type.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-housing-fund-loan.html">
+          <div class="ic">🏦</div><h3>Housing Fund Loan</h3>
+          <p>Estimate your 公积金 loan and monthly payment.</p>
+        </a>
+      </div>
+    </section>
 
-    <script src="./main.js"></script>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </body>
+    <section class="cluster" id="tax">
+      <div class="cluster-head"><h2>Tax &amp; Social Insurance</h2><span>IIT, residency, 五险一金</span></div>
+      <div class="tool-grid">
+        <a class="tool-card" href="./tools/china-iit-calculator.html">
+          <div class="ic">🧾</div><h3>Income Tax Calculator</h3>
+          <p>Estimate monthly income tax for expats in China.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-tax-resident-checker.html">
+          <div class="ic">🛂</div><h3>Tax Resident Checker</h3>
+          <p>Check your status under the 183-day &amp; 6-year rule.</p>
+        </a>
+        <a class="tool-card" href="./tools/china-social-insurance.html">
+          <div class="ic">📑</div><h3>Social Insurance Estimator</h3>
+          <p>Estimate 五险一金 employee and employer contributions.</p>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="./index.html">Home</a> · <a href="./privacy.html">Privacy</a></small>
+  </footer>
+
+  <script src="./assets/site.js"></script>
+</body>
 </html>

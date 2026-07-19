@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A-Share Price Limit Calculator (涨停/跌停) — China Finance Tools</title>
+  <meta name="description" content="Compute the daily limit-up and limit-down prices for Chinese A-shares, with T+1 settlement explained." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"A-Share Price Limit Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Compute the daily limit-up and limit-down prices for Chinese A-shares, with T+1 settlement explained." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ { "@type":"Question","name":"What are 涨停 and 跌停?","acceptedAnswer":{ "@type":"Answer","text":"Limit-up (涨停) and limit-down (跌停) are the maximum prices a stock may trade at on a given day, set as a percentage of the prior close." } }, { "@type":"Question","name":"What is T+1?","acceptedAnswer":{ "@type":"Answer","text":"Trades settle the next day; shares bought today cannot be sold until tomorrow." } }, { "@type":"Question","name":"Which boards use 20%?","acceptedAnswer":{ "@type":"Answer","text":"The STAR Market (科创板) and ChiNext (创业板) use a ±20% limit; the main board uses ±10%." } }, { "@type":"Question","name":"Are there exceptions?","acceptedAnswer":{ "@type":"Answer","text":"Newly listed stocks and some restructured stocks may trade without a limit for their first days." } } ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>A-Share Price Limit Calculator</h1><p class="lede">Chinese mainland stocks have daily price limits. Enter the previous close to see today's limit-up (涨停) and limit-down (跌停) prices.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Previous close (CNY)
+          <input type="number" id="prevClose" step="0.01" min="0" placeholder="e.g. 100.00" required />
+        </label>
+        <label class="field">Board
+          <select id="board">
+            <option value="10">Main board ±10%</option>
+            <option value="20">STAR Market &amp; ChiNext ±20%</option>
+          </select>
+        </label>
+        <button type="submit" class="btn">Calculate</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What are 涨停 and 跌停?</summary><p>Limit-up (涨停) and limit-down (跌停) are the maximum prices a stock may trade at on a given day, set as a percentage of the prior close.</p></details>
+      <details><summary>What is T+1?</summary><p>Trades settle the next day; shares bought today cannot be sold until tomorrow.</p></details>
+      <details><summary>Which boards use 20%?</summary><p>The STAR Market (科创板) and ChiNext (创业板) use a ±20% limit; the main board uses ±10%.</p></details>
+      <details><summary>Are there exceptions?</summary><p>Newly listed stocks and some restructured stocks may trade without a limit for their first days.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+      var cny = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var prev = parseFloat(document.getElementById('prevClose').value);
+        var board = document.getElementById('board').value;
+
+        if (isNaN(prev) || prev <= 0) {
+          result.innerHTML = '<p class="note">Please enter a valid previous close price greater than zero.</p>';
+          return;
+        }
+
+        var limit = board === '20' ? 0.20 : 0.10;
+        var up = prev * (1 + limit);
+        var down = prev * (1 - limit);
+        var upR = Math.round(up * 100) / 100;
+        var downR = Math.round(down * 100) / 100;
+
+        result.innerHTML =
+          '<p>Daily price band for this stock (based on the previous close):</p>' +
+          '<table>' +
+          '<tr><td>Limit rate</td><td>&plusmn;' + (limit * 100).toFixed(0) + '%</td></tr>' +
+          '<tr><td>Previous close</td><td>' + cny.format(prev) + '</td></tr>' +
+          '<tr><td>Limit-up (涨停)</td><td>' + cny.format(upR) + '</td></tr>' +
+          '<tr><td>Limit-down (跌停)</td><td>' + cny.format(downR) + '</td></tr>' +
+          '</table>' +
+          '<p class="note">A-shares settle T+1: shares bought on the same day cannot be sold until the next trading day. The limit-up and limit-down prices are computed from the previous close and rounded to two decimal places. Rules can change, and some stocks (e.g. newly listed) may trade without a limit.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

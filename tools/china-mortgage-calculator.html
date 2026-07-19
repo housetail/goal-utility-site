@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Mortgage Calculator (LPR) — China Finance Tools</title>
+  <meta name="description" content="Free China mortgage calculator using the LPR benchmark. Compare equal-installment (等额本息) vs equal-principal (等额本金) repayment in RMB." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Mortgage Calculator (LPR)","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free China mortgage calculator using the LPR benchmark. Compare equal-installment (等额本息) vs equal-principal (等额本金) repayment in RMB." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"What is LPR?","acceptedAnswer":{"@type":"Answer","text":"The Loan Prime Rate is the benchmark reference rate set by the National Interbank Funding Center in China; most mortgages are priced as LPR plus a fixed spread."}}, {"@type":"Question","name":"Equal installment vs equal principal?","acceptedAnswer":{"@type":"Answer","text":"Equal installment (等额本息) keeps the monthly payment constant; equal principal (等额本金) pays the same principal each month so payments start high and decrease, with less total interest."}}, {"@type":"Question","name":"Can foreigners get a mortgage in China?","acceptedAnswer":{"@type":"Answer","text":"Yes, but banks typically require a valid work permit/residence permit, proof of income, and a higher down payment; policies vary by city."}}, {"@type":"Question","name":"Are rates fixed?","acceptedAnswer":{"@type":"Answer","text":"Chinese mortgages usually use a floating rate reset periodically against LPR, not a long-term fixed rate like in the US."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Mortgage Calculator</h1><p class="lede">Estimate your monthly payment on a Chinese home loan using the LPR benchmark, and compare the two standard repayment methods.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Loan amount (CNY)
+          <input type="number" id="loan" min="0" step="10000" value="3000000" required />
+          <span class="hint">Total borrowed in RMB.</span>
+        </label>
+        <label class="field">Annual LPR rate (%)
+          <input type="number" id="rate" min="0" step="0.01" value="3.95" required />
+          <span class="hint">5-year+ LPR is around 3.95% recently.</span>
+        </label>
+        <label class="field">Term (years)
+          <input type="number" id="years" min="1" step="1" value="30" required />
+        </label>
+        <label class="field">Repayment method
+          <select id="method">
+            <option value="equal-installment">Equal installment 等额本息</option>
+            <option value="equal-principal">Equal principal 等额本金</option>
+          </select>
+        </label>
+        <div class="row">
+          <button type="submit" class="btn">Calculate</button>
+        </div>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is LPR?</summary><p>The Loan Prime Rate is the benchmark reference rate set by the National Interbank Funding Center in China; most mortgages are priced as LPR plus a fixed spread.</p></details>
+      <details><summary>Equal installment vs equal principal?</summary><p>Equal installment (等额本息) keeps the monthly payment constant; equal principal (等额本金) pays the same principal each month so payments start high and decrease, with less total interest.</p></details>
+      <details><summary>Can foreigners get a mortgage in China?</summary><p>Yes, but banks typically require a valid work permit/residence permit, proof of income, and a higher down payment; policies vary by city.</p></details>
+      <details><summary>Are rates fixed?</summary><p>Chinese mortgages usually use a floating rate reset periodically against LPR, not a long-term fixed rate like in the US.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var form = document.getElementById('calc-form');
+    var result = document.getElementById('result');
+    var cny = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 });
+
+    function compute(P, r, n) {
+      // Equal installment (等额本息)
+      var M, totalEI;
+      if (r === 0) {
+        M = P / n;
+      } else {
+        var pow = Math.pow(1 + r, n);
+        M = P * r * pow / (pow - 1);
+      }
+      totalEI = M * n;
+      var interestEI = totalEI - P;
+
+      // Equal principal (等额本金)
+      var principalPerMonth = P / n;
+      var firstPayment = principalPerMonth + P * r;
+      var lastPayment = principalPerMonth + (P / n) * r;
+      var totalInterestEP = P * r * (n + 1) / 2;
+      var totalEP = P + totalInterestEP;
+
+      return {
+        M: M, totalEI: totalEI, interestEI: interestEI,
+        principalPerMonth: principalPerMonth, firstPayment: firstPayment,
+        lastPayment: lastPayment, totalInterestEP: totalInterestEP, totalEP: totalEP
+      };
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var P = parseFloat(document.getElementById('loan').value);
+      var rate = parseFloat(document.getElementById('rate').value);
+      var years = parseFloat(document.getElementById('years').value);
+      var method = document.getElementById('method').value;
+
+      if (!isFinite(P) || P <= 0 || !isFinite(rate) || rate < 0 || !isFinite(years) || years <= 0) {
+        result.innerHTML = '<p class="note">Please enter a valid loan amount, rate, and term.</p>';
+        return;
+      }
+
+      var n = Math.round(years * 12);
+      var r = rate / 100 / 12;
+      var d = compute(P, r, n);
+      var html = '';
+
+      if (method === 'equal-installment') {
+        html += '<h2 class="result-title">Equal installment (等额本息)</h2>';
+        html += '<p>Monthly payment: <span class="big">' + cny.format(d.M) + '</span></p>';
+        html += '<p>Total payment: <strong>' + cny.format(d.totalEI) + '</strong></p>';
+        html += '<p>Total interest: <strong>' + cny.format(d.interestEI) + '</strong></p>';
+        html += '<p class="note">Equal principal (等额本金) would pay less total interest: ' + cny.format(d.totalInterestEP) + '.</p>';
+      } else {
+        html += '<h2 class="result-title">Equal principal (等额本金)</h2>';
+        html += '<p>First month payment: <span class="big">' + cny.format(d.firstPayment) + '</span></p>';
+        html += '<p>Last month payment: <strong>' + cny.format(d.lastPayment) + '</strong> (decreasing each month)</p>';
+        html += '<p>Total payment: <strong>' + cny.format(d.totalEP) + '</strong></p>';
+        html += '<p>Total interest: <strong>' + cny.format(d.totalInterestEP) + '</strong></p>';
+        html += '<p class="note">Equal installment (等额本息) would pay total interest: ' + cny.format(d.interestEI) + '.</p>';
+      }
+
+      html += '<p class="note">Assumptions: figures use a constant rate and ignore fees, mortgage insurance, and periodic LPR resets. Chinese mortgage rules and the LPR change over time; confirm with your lender.</p>';
+      result.innerHTML = html;
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Personal Forex Quota Calculator ($50,000) — China Finance Tools</title>
+  <meta name="description" content="Check China's annual $50,000 per-person foreign-exchange quota. See how much you can still convert or remit this year." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Personal Forex Quota Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check China's annual $50,000 per-person foreign-exchange quota. See how much you can still convert or remit this year." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    { "@type":"Question","name":"What is the $50,000 quota?","acceptedAnswer":{ "@type":"Answer","text":"Each individual may purchase or remit up to USD 50,000 of foreign currency per year under simplified procedures." } },
+    { "@type":"Question","name":"Can I send more than $50,000?","acceptedAnswer":{ "@type":"Answer","text":"Yes, with supporting documents proving a genuine purpose; the bank reviews and reports large transfers." } },
+    { "@type":"Question","name":"Does it roll over?","acceptedAnswer":{ "@type":"Answer","text":"No, the quota resets each calendar year and unused amounts are forfeited." } },
+    { "@type":"Question","name":"Is this for RMB exchange or remittance?","acceptedAnswer":{ "@type":"Answer","text":"Both purchasing foreign currency and outward remittance count toward the same annual quota." } }
+  ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Forex Quota Calculator</h1><p class="lede">China limits individuals to USD 50,000 of foreign-exchange purchase or remittance per calendar year. See what remains.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Amount already used this year (USD)
+          <input type="number" id="used" min="0" step="1" value="0" inputmode="numeric" />
+          <span class="hint">Foreign currency you have already purchased or remitted in the current calendar year.</span>
+        </label>
+        <label class="field">Planned conversion / remittance now (USD)
+          <input type="number" id="planned" min="0" step="1" value="10000" inputmode="numeric" />
+          <span class="hint">The amount you intend to convert or send in this transaction.</span>
+        </label>
+        <button type="submit" class="btn">Check quota</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is the $50,000 quota?</summary><p>Each individual may purchase or remit up to USD 50,000 of foreign currency per year under simplified procedures.</p></details>
+      <details><summary>Can I send more than $50,000?</summary><p>Yes, with supporting documents proving a genuine purpose; the bank reviews and reports large transfers.</p></details>
+      <details><summary>Does it roll over?</summary><p>No, the quota resets each calendar year and unused amounts are forfeited.</p></details>
+      <details><summary>Is this for RMB exchange or remittance?</summary><p>Both purchasing foreign currency and outward remittance count toward the same annual quota.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var QUOTA = 50000;
+      var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var used = parseFloat(document.getElementById('used').value);
+        var planned = parseFloat(document.getElementById('planned').value);
+
+        if (isNaN(used) || isNaN(planned) || used < 0 || planned < 0) {
+          result.innerHTML = '<p class="note">Please enter valid, non-negative USD amounts.</p>';
+          return;
+        }
+
+        var remaining = QUOTA - used;
+
+        if (planned <= remaining) {
+          var after = remaining - planned;
+          result.innerHTML =
+            '<p class="big">' + usd.format(planned) + ' fits within your quota.</p>' +
+            '<p>Annual quota: <strong>' + usd.format(QUOTA) + '</strong></p>' +
+            '<p>Already used: <strong>' + usd.format(used) + '</strong></p>' +
+            '<p>Remaining before this transaction: <strong>' + usd.format(remaining) + '</strong></p>' +
+            '<p>Remaining after this transaction: <strong>' + usd.format(after) + '</strong></p>' +
+            '<p class="note">This transaction can be done under simplified procedures. The quota is per individual per calendar year.</p>';
+        } else {
+          var shortfall = planned - remaining;
+          result.innerHTML =
+            '<p class="big">Shortfall of ' + usd.format(shortfall) + '.</p>' +
+            '<p>Annual quota: <strong>' + usd.format(QUOTA) + '</strong></p>' +
+            '<p>Already used: <strong>' + usd.format(used) + '</strong></p>' +
+            '<p>Remaining under simplified quota: <strong>' + usd.format(Math.max(0, remaining)) + '</strong></p>' +
+            '<p>Amount above quota: <strong>' + usd.format(shortfall) + '</strong></p>' +
+            '<p class="note">Amounts above the quota generally require documentation of a legitimate purpose (study, medical, trade) and bank approval; large sums may need alternative channels.</p>';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

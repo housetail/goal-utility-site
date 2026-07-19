@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A-Share vs US Stock Rules (Interactive Comparison) — China Finance Tools</title>
+  <meta name="description" content="Compare China A-shares and US stocks: price limits, T+1 vs T+0, settlement, and capital gains tax." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"A-Share vs US Stock Rules","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Compare China A-shares and US stocks: price limits, T+1 vs T+0, settlement, and capital gains tax." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    { "@type":"Question","name":"Why no US-style circuit breaker in China now?","acceptedAnswer":{ "@type":"Answer","text":"China removed its index circuit breaker in 2016 after it backfired; it relies on per-stock price limits instead." } },
+    { "@type":"Question","name":"T+1 vs T+0?","acceptedAnswer":{ "@type":"Answer","text":"China settles T+1 (no same-day selling); US allows same-day trading though settlement is T+2." } },
+    { "@type":"Question","name":"Is Chinese capital gains tax lower?","acceptedAnswer":{ "@type":"Answer","text":"Individual gains on A-shares are currently exempt, whereas US investors owe capital gains tax." } }
+  ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>A-Share vs US Stock Rules</h1><p class="lede">Understand the key differences between trading in China's A-share market and US stock markets.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Stock price (CNY)
+          <input type="number" id="price" value="100" min="0" step="0.01" />
+        </label>
+        <label class="field">Board
+          <select id="board">
+            <option value="10">Main board ±10%</option>
+            <option value="20">STAR &amp; ChiNext ±20%</option>
+          </select>
+        </label>
+        <button type="submit" class="btn">Compare</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>Why no US-style circuit breaker in China now?</summary><p>China removed its index circuit breaker in 2016 after it backfired; it relies on per-stock price limits instead.</p></details>
+      <details><summary>T+1 vs T+0?</summary><p>China settles T+1 (no same-day selling); US allows same-day trading though settlement is T+2.</p></details>
+      <details><summary>Is Chinese capital gains tax lower?</summary><p>Individual gains on A-shares are currently exempt, whereas US investors owe capital gains tax.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var cnyFmt = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' });
+
+      function render() {
+        var prev = parseFloat(document.getElementById('price').value);
+        var board = document.getElementById('board').value;
+
+        if (isNaN(prev) || prev <= 0) {
+          document.getElementById('result').innerHTML =
+            '<p class="note">Please enter a valid stock price greater than zero.</p>';
+          return;
+        }
+
+        var limit = board === '20' ? 0.20 : 0.10;
+        var up = prev * (1 + limit);
+        var down = prev * (1 - limit);
+        var limitLabel = board === '20' ? '±20%' : '±10%';
+
+        var html = '';
+        html += '<h3>China daily limit range (' + limitLabel + ')</h3>';
+        html += '<p>Previous close: ' + cnyFmt.format(prev) + '</p>';
+        html += '<p>Limit-down (跌停): <span class="big">' + cnyFmt.format(down) + '</span></p>';
+        html += '<p>Limit-up (涨停): <span class="big">' + cnyFmt.format(up) + '</span></p>';
+
+        html += '<h3>A-Share vs US Stock Rules</h3>';
+        html += '<table class="cmp-table">';
+        html += '<thead><tr><th>Rule</th><th>China A-shares</th><th>US stocks</th></tr></thead><tbody>';
+        html += '<tr><td>Price limit</td><td>' + limitLabel + ' (per-stock)</td><td>None</td></tr>';
+        html += '<tr><td>Settlement / trading</td><td>T+1 (cannot sell shares bought same day)</td><td>T+0 intraday trading, T+2 settlement</td></tr>';
+        html += '<tr><td>Circuit breaker</td><td>None at index level currently (relies on per-stock limits)</td><td>LULD (limit-up/limit-down) on individual stocks; market-wide halts at 7/13/20%</td></tr>';
+        html += '<tr><td>Capital gains tax</td><td>Exempt for individuals on A-shares</td><td>Taxed</td></tr>';
+        html += '</tbody></table>';
+
+        html += '<p class="note">Rules are illustrative and simplified. Price limits are computed from the previous close. China removed its index circuit breaker in 2016; US uses LULD and market-wide halts. Capital gains treatment can change and depends on residency and account type. Verify against official SSE/SZSE and IRS guidance.</p>';
+
+        document.getElementById('result').innerHTML = html;
+      }
+
+      document.getElementById('calc-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        render();
+      });
+
+      // Initial render
+      render();
+    })();
+  </script>
+</body>
+</html>

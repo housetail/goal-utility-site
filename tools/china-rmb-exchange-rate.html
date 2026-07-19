@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China RMB Exchange Rate with PBOC Central Parity — China Finance Tools</title>
+  <meta name="description" content="Convert between RMB and other currencies and understand the PBOC central parity rate that anchors the daily RMB band." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China RMB Exchange Rate (PBOC Parity)","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Convert between RMB and other currencies and understand the PBOC central parity rate that anchors the daily RMB band." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"What is the PBOC central parity?","acceptedAnswer":{"@type":"Answer","text":"The daily reference rate set by the People's Bank of China; the onshore RMB may move within a band around it."}}, {"@type":"Question","name":"What is the difference between CNY and CNH?","acceptedAnswer":{"@type":"Answer","text":"CNY is onshore RMB (regulated band); CNH is offshore RMB traded outside mainland China with a freer price."}}, {"@type":"Question","name":"Why does RMB have a daily band?","acceptedAnswer":{"@type":"Answer","text":"To limit intraday volatility; the band has widened over time to about ±2% around the parity."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China RMB Exchange Rate</h1><p class="lede">Convert an amount and learn how the PBOC central parity rate (中间价) sets each day's reference for the onshore RMB.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Amount
+          <input type="number" id="amount" value="100" min="0" step="any" inputmode="decimal" />
+        </label>
+        <div class="row">
+          <label class="field">From
+            <select id="from">
+              <option value="USD">USD — US Dollar</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="GBP">GBP — British Pound</option>
+              <option value="JPY">JPY — Japanese Yen</option>
+              <option value="HKD">HKD — Hong Kong Dollar</option>
+              <option value="CNY" selected>CNY — Chinese Yuan (RMB)</option>
+            </select>
+          </label>
+          <label class="field">To
+            <select id="to">
+              <option value="USD" selected>USD — US Dollar</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="GBP">GBP — British Pound</option>
+              <option value="JPY">JPY — Japanese Yen</option>
+              <option value="HKD">HKD — Hong Kong Dollar</option>
+              <option value="CNY">CNY — Chinese Yuan (RMB)</option>
+            </select>
+          </label>
+        </div>
+        <button type="submit" class="btn">Convert</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <p class="note">Rates are indicative mid-market rates fetched live from a public exchange-rate API and may differ from the rate your bank or money changer applies (which includes a spread and fees). The PBOC central parity (中间价) is the daily reference rate published by the People's Bank of China; the onshore RMB (CNY) may trade within a band of roughly ±2% around it, while the offshore RMB (CNH) trades more freely and can differ slightly. Rates change constantly and this tool is for estimation only.</p>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is the PBOC central parity?</summary><p>The daily reference rate set by the People's Bank of China; the onshore RMB may move within a band around it.</p></details>
+      <details><summary>What is the difference between CNY and CNH?</summary><p>CNY is onshore RMB (regulated band); CNH is offshore RMB traded outside mainland China with a freer price.</p></details>
+      <details><summary>Why does RMB have a daily band?</summary><p>To limit intraday volatility; the band has widened over time to about ±2% around the parity.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var API = 'https://open.er-api.com/v6/latest/USD';
+    var rates = null;       // base USD rates
+    var lastUpdated = null;
+    var form = document.getElementById('calc-form');
+    var resultEl = document.getElementById('result');
+    var amountEl = document.getElementById('amount');
+    var fromEl = document.getElementById('from');
+    var toEl = document.getElementById('to');
+
+    function fmtMoney(value, currency) {
+      var opts = { maximumFractionDigits: 4 };
+      if (currency === 'CNY') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY' }).format(value);
+      if (currency === 'USD') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+      try {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, maximumFractionDigits: 4 }).format(value);
+      } catch (e) {
+        return new Intl.NumberFormat('en-US', { maximumFractionDigits: 4 }).format(value) + ' ' + currency;
+      }
+    }
+
+    function fmtRate(value) {
+      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 }).format(value);
+    }
+
+    function showMessage(html, isError) {
+      resultEl.innerHTML = html;
+      resultEl.classList.toggle('error', !!isError);
+    }
+
+    function calculate() {
+      if (!rates) {
+        showMessage('Loading live rates… please wait a moment and try again.', false);
+        return;
+      }
+      var amount = parseFloat(amountEl.value);
+      var from = fromEl.value;
+      var to = toEl.value;
+      if (!isFinite(amount) || amount < 0) {
+        showMessage('Please enter a valid amount of 0 or more.', true);
+        return;
+      }
+      if (!rates[from] || !rates[to]) {
+        showMessage('Exchange rate for the selected currency is unavailable right now. Please try again later.', true);
+        return;
+      }
+      var usd = amount / rates[from];
+      var converted = usd * rates[to];
+      var unitRate = rates[to] / rates[from];
+      var updatedLine = lastUpdated
+        ? '<p class="hint">Live mid-market rate as of ' + lastUpdated + '.</p>'
+        : '';
+      showMessage(
+        '<p class="big">' + fmtMoney(amount, from) + ' = ' + fmtMoney(converted, to) + '</p>' +
+        '<p>1 ' + from + ' &asymp; ' + fmtRate(unitRate) + ' ' + to + '</p>' +
+        updatedLine
+      );
+    }
+
+    function loadRates() {
+      showMessage('Fetching live exchange rates…', false);
+      fetch(API)
+        .then(function (resp) {
+          if (!resp.ok) throw new Error('Network response was not ok');
+          return resp.json();
+        })
+        .then(function (data) {
+          if (!data || !data.rates || !data.rates.USD) throw new Error('Unexpected data');
+          rates = data.rates;
+          if (data.time_last_update_utc) {
+            lastUpdated = data.time_last_update_utc;
+          } else if (data.time_last_updated) {
+            lastUpdated = new Date(data.time_last_updated * 1000).toUTCString();
+          }
+          calculate();
+        })
+        .catch(function () {
+          showMessage('Sorry, we could not load live exchange rates right now. Please check your connection and try again. The converter needs a live rate feed to work.', true);
+        });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      calculate();
+    });
+
+    loadRates();
+  })();
+  </script>
+</body>
+</html>

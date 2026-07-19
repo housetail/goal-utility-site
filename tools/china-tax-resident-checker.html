@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Tax Resident Checker (183-Day &amp; 6-Year Rule) — China Finance Tools</title>
+  <meta name="description" content="Check whether you are a Chinese tax resident under the 183-day rule and the 6-year worldwide-income rule." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Tax Resident Checker","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check whether you are a Chinese tax resident under the 183-day rule and the 6-year worldwide-income rule." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"What is the 183-day rule?","acceptedAnswer":{"@type":"Answer","text":"If you are physically present in China 183 days or more in a tax year, you are a tax resident for that year."}}, {"@type":"Question","name":"What is the 6-year rule?","acceptedAnswer":{"@type":"Answer","text":"After 6 consecutive resident years (without a single 30-day or longer absence in a year), your worldwide income is taxed in China."}}, {"@type":"Question","name":"Does the clock reset?","acceptedAnswer":{"@type":"Answer","text":"A single year with a continuous absence of 30 or more days resets the 6-year count."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Tax Resident Checker</h1><p class="lede">Determine your China tax-resident status using the 183-day presence test and the 6-year rule for worldwide income.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Days present in China this tax year
+          <input type="number" name="days" min="0" max="366" step="1" placeholder="e.g. 200" required />
+        </label>
+        <label class="field">Years out of the last 6 you were present &ge;183 days
+          <input type="number" name="years" min="0" max="6" step="1" value="0" required />
+          <span class="hint">Enter a number from 0 to 6.</span>
+        </label>
+        <button type="submit" class="btn">Check status</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is the 183-day rule?</summary><p>If you are physically present in China 183 days or more in a tax year, you are a tax resident for that year.</p></details>
+      <details><summary>What is the 6-year rule?</summary><p>After 6 consecutive resident years (without a single 30-day or longer absence in a year), your worldwide income is taxed in China.</p></details>
+      <details><summary>Does the clock reset?</summary><p>A single year with a continuous absence of 30 or more days resets the 6-year count.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var days = parseFloat(form.elements['days'].value);
+        var years = parseInt(form.elements['years'].value, 10);
+        if (isNaN(days) || isNaN(years)) {
+          result.innerHTML = '<p class="note">Please enter valid numbers for both fields.</p>';
+          return;
+        }
+        if (years < 0) years = 0;
+        if (years > 6) years = 6;
+
+        var resident = days >= 183;
+        var residentText = resident
+          ? 'Yes — you meet the 183-day test'
+          : 'No — you do not meet the 183-day test';
+
+        var worldwide;
+        if (years >= 6) {
+          worldwide = 'Your worldwide income becomes taxable in China once you have been a tax resident for 6 consecutive years (with no ≥30-day absence break).';
+        } else {
+          worldwide = 'Only your China-sourced income is taxable this year; the 6-year clock is at ' + years + '/6.';
+        }
+
+        result.innerHTML =
+          '<p class="big">Tax resident this year: ' + (resident ? 'Yes' : 'No') + '</p>' +
+          '<p><strong>183-day test:</strong> ' + residentText + ' (you entered ' + days + ' days present).</p>' +
+          '<p><strong>6-year rule (worldwide income):</strong> ' + worldwide + '</p>' +
+          '<p class="note">This is a simplified guide based on current Chinese individual income tax rules. Provisions change and tax treaties may alter your status; consult a qualified tax adviser for your specific situation.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

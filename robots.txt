@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://housetail.github.io/sitemap.xml

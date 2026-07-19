@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CNY vs CNH — Onshore vs Offshore RMB</title>
+  <meta name="description" content="See the onshore/offshore RMB spread. Convert an amount into both CNY and CNH and understand why two rates exist." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"CNY vs CNH (Onshore vs Offshore RMB)","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"See the onshore/offshore RMB spread. Convert an amount into both CNY and CNH and understand why two rates exist." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"Why are there two RMB rates?","acceptedAnswer":{"@type":"Answer","text":"Onshore CNY is subject to PBOC controls and a daily band; offshore CNH trades freely in hubs like Hong Kong."}}, {"@type":"Question","name":"Which rate should I use?","acceptedAnswer":{"@type":"Answer","text":"Use CNY for mainland transactions, CNH for offshore holdings; the difference is usually small."}}, {"@type":"Question","name":"Does the spread matter?","acceptedAnswer":{"@type":"Answer","text":"For large transfers it can be meaningful; it also signals market stress or capital-flow pressure."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>CNY vs CNH (Onshore vs Offshore RMB)</h1><p class="lede">China has two RMB markets. Enter an amount to see its value in onshore CNY and offshore CNH, and the spread between them.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Amount in USD (US$)
+          <input id="amount" type="number" min="0" step="any" value="10000" />
+          <span class="hint">The US dollar amount you want to value in onshore and offshore RMB.</span>
+        </label>
+        <button class="btn" type="submit">Convert &amp; compare</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>Why are there two RMB rates?</summary><p>Onshore CNY is subject to PBOC controls and a daily band; offshore CNH trades freely in hubs like Hong Kong.</p></details>
+      <details><summary>Which rate should I use?</summary><p>Use CNY for mainland transactions, CNH for offshore holdings; the difference is usually small.</p></details>
+      <details><summary>Does the spread matter?</summary><p>For large transfers it can be meaningful; it also signals market stress or capital-flow pressure.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+      var cnyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY' });
+      var pctFmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+
+      function compute(rates, amount) {
+        var cnyRate = rates['CNY'];
+        if (!cnyRate) {
+          result.innerHTML = '<p>Live onshore CNY rate is unavailable right now. Please try again later.</p>';
+          return;
+        }
+        var cny = amount * cnyRate;
+        var html = '<div class="big">' + cnyFmt.format(cny) + '</div>';
+        html += '<table>';
+        html += '<tr><td>Onshore CNY (per 1 USD)</td><td>' + cnyRate.toFixed(4) + '</td></tr>';
+        var cnhRate = rates['CNH'];
+        if (cnhRate) {
+          var cnh = amount * cnhRate;
+          var spread = (cnh - cny) / cny * 100;
+          html += '<tr><td>Offshore CNH value</td><td>' + cnyFmt.format(cnh) + '</td></tr>';
+          html += '<tr><td>Offshore CNH (per 1 USD)</td><td>' + cnhRate.toFixed(4) + '</td></tr>';
+          html += '<tr><td>CNH − CNY difference</td><td>' + cnyFmt.format(cnh - cny) + '</td></tr>';
+          html += '<tr><td>Spread (CNH vs CNY)</td><td>' + (spread >= 0 ? '+' : '') + pctFmt.format(spread) + '%</td></tr>';
+          html += '</table>';
+          html += '<p class="note">The spread reflects onshore capital controls versus offshore free trading. It is usually small but can widen during market stress or capital-flow pressure. Rates are indicative mid-market values and may differ from the price your bank quotes.</p>';
+        } else {
+          html += '</table>';
+          html += '<p class="note">Live offshore CNH rate is not available from the data source right now, so the spread cannot be calculated. The onshore CNY value is shown above.</p>';
+        }
+        result.innerHTML = html;
+      }
+
+      function run() {
+        var amount = parseFloat(document.getElementById('amount').value);
+        if (!isFinite(amount)) {
+          result.innerHTML = '<p>Please enter a valid amount in USD.</p>';
+          return;
+        }
+        result.innerHTML = '<p>Fetching live rates…</p>';
+        fetch('https://open.er-api.com/v6/latest/USD')
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (!data || data.result !== 'success' || !data.rates) {
+              result.innerHTML = '<p>Could not load live exchange rates. Please try again later.</p>';
+              return;
+            }
+            compute(data.rates, amount);
+          })
+          .catch(function () {
+            result.innerHTML = '<p>Could not load live exchange rates. Check your connection and try again.</p>';
+          });
+      }
+
+      form.addEventListener('submit', function (e) { e.preventDefault(); run(); });
+      run();
+    })();
+  </script>
+</body>
+</html>

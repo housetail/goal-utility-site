@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Housing Provident Fund (公积金) Loan Calculator — China Finance Tools</title>
+  <meta name="description" content="Estimate your Housing Provident Fund loan eligibility and monthly payment at China's preferential rate." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Housing Provident Fund Loan Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate your Housing Provident Fund loan eligibility and monthly payment at China's preferential rate." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    { "@type":"Question","name":"What is the Housing Provident Fund?","acceptedAnswer":{ "@type":"Answer","text":"A mandatory savings scheme where employers and employees both contribute; members can borrow at a preferential rate for housing." } },
+    { "@type":"Question","name":"Who qualifies?","acceptedAnswer":{ "@type":"Answer","text":"Contributors with a sufficient continuous payment history; the exact rules vary by city." } },
+    { "@type":"Question","name":"What is the interest rate?","acceptedAnswer":{ "@type":"Answer","text":"Provident-fund loans carry a below-market rate (around 3.1% recently), which is lower than commercial LPR mortgages." } }
+  ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>Housing Provident Fund Loan Calculator</h1><p class="lede">The Housing Provident Fund (住房公积金) is a low-interest housing loan for contributors. Estimate your eligible amount and monthly payment.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Monthly provident-fund contribution (CNY)
+          <input type="number" id="contribution" value="2000" min="0" step="100" />
+        </label>
+        <label class="field">Months of continuous contribution
+          <input type="number" id="months" value="24" min="0" step="1" />
+        </label>
+        <label class="field">City cap
+          <select id="citycap">
+            <option value="1200000">Beijing — 1,200,000</option>
+            <option value="1000000">Shanghai — 1,000,000</option>
+            <option value="1260000">Shenzhen — 1,260,000</option>
+            <option value="600000" selected>Other — 600,000</option>
+          </select>
+        </label>
+        <label class="field">Term (years)
+          <input type="number" id="term" value="30" min="1" max="30" step="1" />
+        </label>
+        <button type="submit" class="btn">Calculate</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is the Housing Provident Fund?</summary><p>A mandatory savings scheme where employers and employees both contribute; members can borrow at a preferential rate for housing.</p></details>
+      <details><summary>Who qualifies?</summary><p>Contributors with a sufficient continuous payment history; the exact rules vary by city.</p></details>
+      <details><summary>What is the interest rate?</summary><p>Provident-fund loans carry a below-market rate (around 3.1% recently), which is lower than commercial LPR mortgages.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var cny = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 });
+      var form = document.getElementById('calc-form');
+      var out = document.getElementById('result');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var contribution = parseFloat(document.getElementById('contribution').value) || 0;
+        var months = parseFloat(document.getElementById('months').value) || 0;
+        var cityCap = parseFloat(document.getElementById('citycap').value) || 0;
+        var term = parseFloat(document.getElementById('term').value) || 0;
+
+        if (term <= 0) { out.innerHTML = '<p class="note">Please enter a term of at least 1 year.</p>'; return; }
+
+        var rate = 3.1; // current preferential provident-fund rate (%)
+        // Simplified illustrative eligibility:
+        // eligible = min(cityCap, annualContribution * years * 0.6)
+        var eligible = Math.min(cityCap, contribution * 12 * (months / 12) * 0.6);
+        var n = term * 12;
+        var r = rate / 100 / 12;
+        var monthly, totalPaid, totalInterest;
+        if (r === 0) {
+          monthly = eligible / n;
+          totalPaid = eligible;
+          totalInterest = 0;
+        } else {
+          monthly = eligible * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+          totalPaid = monthly * n;
+          totalInterest = totalPaid - eligible;
+        }
+
+        out.innerHTML =
+          '<div class="big">' + cny.format(eligible) + '</div>' +
+          '<p>Eligible loan amount (capped by city limit)</p>' +
+          '<p>Monthly payment at ' + rate.toFixed(1) + '%: <strong>' + cny.format(monthly) + '</strong></p>' +
+          '<p>Total repaid: ' + cny.format(totalPaid) + '</p>' +
+          '<p>Total interest: ' + cny.format(totalInterest) + '</p>' +
+          '<p class="note">Estimates only. Real eligibility depends on your accumulated fund balance, contribution history, and local city rules; the 3.1% rate is the recent preferential rate and may change. Confirm with your local provident-fund center.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

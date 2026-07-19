@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China A-Share Trading Calendar (Next Trading Day) — China Finance Tools</title>
+  <meta name="description" content="Find the next A-share trading day, accounting for Chinese public holidays and 调休 make-up workdays." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Trading Calendar (Next Trading Day)","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Find the next A-share trading day, accounting for Chinese public holidays and 调休 make-up workdays." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"What is 调休?","acceptedAnswer":{"@type":"Answer","text":"China shifts rest days around holidays so workers get long breaks; some weekends become make-up workdays and remain trading days."}}, {"@type":"Question","name":"When is the market closed?","acceptedAnswer":{"@type":"Answer","text":"Weekends plus the official public-holiday schedule published by the exchanges each year."}}, {"@type":"Question","name":"What are the trading hours?","acceptedAnswer":{"@type":"Answer","text":"Morning 9:30-11:30 and afternoon 13:00-15:00 (Beijing time), Monday to Friday."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Trading Calendar</h1><p class="lede">Enter a date to find the next mainland A-share trading day, factoring in weekends, public holidays, and 调休 make-up workdays.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">From date
+          <input type="date" id="from-date" name="from-date" required />
+        </label>
+        <div class="row">
+          <button type="submit" class="btn">Find next trading day</button>
+        </div>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <p class="note">This calendar uses an illustrative 2026 holiday and 调休 make-up-workday dataset. Always verify against the official SSE/SZSE published calendar before trading, as the schedule can be adjusted. Trading hours are 09:30–11:30 and 13:00–15:00 Beijing time, Monday to Friday.</p>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is 调休?</summary><p>China shifts rest days around holidays so workers get long breaks; some weekends become make-up workdays and remain trading days.</p></details>
+      <details><summary>When is the market closed?</summary><p>Weekends plus the official public-holiday schedule published by the exchanges each year.</p></details>
+      <details><summary>What are the trading hours?</summary><p>Morning 9:30-11:30 and afternoon 13:00-15:00 (Beijing time), Monday to Friday.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      // ---- 2026 holiday set (closed dates) — fixed, illustrative ----
+      var holidays = new Set([
+        // New Year
+        '2026-01-01',
+        // Spring Festival Feb 17-23
+        '2026-02-17','2026-02-18','2026-02-19','2026-02-20','2026-02-21','2026-02-22','2026-02-23',
+        // Qingming Apr 4-6
+        '2026-04-04','2026-04-05','2026-04-06',
+        // Labour May 1-5
+        '2026-05-01','2026-05-02','2026-05-03','2026-05-04','2026-05-05',
+        // Dragon Boat Jun 19-21
+        '2026-06-19','2026-06-20','2026-06-21',
+        // National Day + Mid-Autumn (overlap) Oct 1-7
+        '2026-10-01','2026-10-02','2026-10-03','2026-10-04','2026-10-05','2026-10-06','2026-10-07'
+      ]);
+      // Make-up workdays: trade even if they fall on a weekend
+      var makeUpWorkdays = new Set([
+        '2026-02-15','2026-05-09','2026-09-27','2026-10-10'
+      ]);
+
+      var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function fmt(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+      function isTradingDay(d) {
+        var ymd = fmt(d);
+        // Make-up workday trades even on a weekend
+        if (makeUpWorkdays.has(ymd)) return true;
+        // Holiday: closed
+        if (holidays.has(ymd)) return false;
+        // Weekend: closed (unless it was a make-up workday, handled above)
+        var day = d.getDay();
+        if (day === 0 || day === 6) return false;
+        return true;
+      }
+
+      function parseDate(value) {
+        // value is YYYY-MM-DD from a date input
+        var parts = value.split('-');
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      }
+
+      function nextTradingDay(from) {
+        var d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+        // If the given date is itself a trading day, return it
+        while (!isTradingDay(d)) {
+          d.setDate(d.getDate() + 1);
+        }
+        return d;
+      }
+
+      function initDefault() {
+        var input = document.getElementById('from-date');
+        if (input && !input.value) {
+          input.value = fmt(new Date());
+        }
+      }
+
+      function run(e) {
+        e.preventDefault();
+        var result = document.getElementById('result');
+        var input = document.getElementById('from-date');
+        if (!input.value) {
+          result.innerHTML = '<p class="note">Please choose a date.</p>';
+          return;
+        }
+        var from = parseDate(input.value);
+        var next = nextTradingDay(from);
+        var sameDay = fmt(next) === fmt(from);
+        var html = '';
+        html += '<p class="big">' + fmt(next) + '</p>';
+        html += '<p><strong>' + DAY_NAMES[next.getDay()] + '</strong> is the next A-share trading day.';
+        if (sameDay) {
+          html += ' The date you entered is already a trading day.';
+        } else {
+          html += ' The date you entered (' + fmt(from) + ') is not a trading day, so the next open session is shown.';
+        }
+        html += '</p>';
+        result.innerHTML = html;
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        initDefault();
+        var form = document.getElementById('calc-form');
+        if (form) form.addEventListener('submit', run);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Social Insurance &amp; Housing Fund Estimator — China Finance Tools</title>
+  <meta name="description" content="Estimate monthly five-insurance-plus-housing-fund (五险一金) contributions in China by city and salary base." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Social Insurance & Housing Fund Estimator","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate monthly five-insurance-plus-housing-fund (五险一金) contributions in China by city and salary base." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ {"@type":"Question","name":"What is 五险一金?","acceptedAnswer":{"@type":"Answer","text":"The \"five insurances and one fund\": pension, medical, unemployment, work injury, maternity insurance, plus the housing provident fund."}}, {"@type":"Question","name":"Who pays?","acceptedAnswer":{"@type":"Answer","text":"Both employee and employer contribute; the employee's share is withheld from salary."}}, {"@type":"Question","name":"Do rates vary by city?","acceptedAnswer":{"@type":"Answer","text":"Yes, contribution rates and the wage base caps differ across cities."}} ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Social Insurance Estimator</h1><p class="lede">Estimate the monthly 五险一金 (pension, medical, unemployment, injury, maternity + housing fund) split between employee and employer.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">City
+          <select id="city">
+            <option value="Beijing">Beijing</option>
+            <option value="Shanghai">Shanghai</option>
+            <option value="Shenzhen">Shenzhen</option>
+            <option value="Generic" selected>Generic</option>
+          </select>
+        </label>
+        <label class="field">Monthly contribution base (CNY)
+          <input id="base" type="number" min="0" step="100" value="20000" />
+        </label>
+        <button class="btn" type="submit">Estimate</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is 五险一金?</summary><p>The "five insurances and one fund": pension, medical, unemployment, work injury, maternity insurance, plus the housing provident fund.</p></details>
+      <details><summary>Who pays?</summary><p>Both employee and employer contribute; the employee's share is withheld from salary.</p></details>
+      <details><summary>Do rates vary by city?</summary><p>Yes, contribution rates and the wage base caps differ across cities.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var cny = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 });
+
+      // Representative rates: [employee%, employer%]
+      var RATES = {
+        pension:      [8,    16],
+        medical:      [2,    9],
+        unemployment: [0.5,  0.5],
+        injury:       [0,    0.4],
+        maternity:    [0,    0.8],
+        housing:      [7,    7]
+      };
+      var LABELS = {
+        pension:      'Pension (养老)',
+        medical:      'Medical (医疗)',
+        unemployment: 'Unemployment (失业)',
+        injury:       'Work injury (工伤)',
+        maternity:    'Maternity (生育)',
+        housing:      'Housing fund (公积金)'
+      };
+
+      function fmtPct(p) { return (p % 1 === 0 ? p : p.toFixed(1)) + '%'; }
+
+      document.getElementById('calc-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var base = parseFloat(document.getElementById('base').value) || 0;
+        var city = document.getElementById('city').value;
+
+        var rows = '';
+        var empTotal = 0, empTotalE = 0;
+        for (var k in RATES) {
+          var er = RATES[k][0], or = RATES[k][1];
+          var emp = base * er / 100;
+          var emr = base * or / 100;
+          empTotal += emp;
+          empTotalE += emr;
+          rows += '<tr><td>' + LABELS[k] + '</td>' +
+            '<td>' + fmtPct(er) + '</td><td>' + cny.format(emp) + '</td>' +
+            '<td>' + fmtPct(or) + '</td><td>' + cny.format(emr) + '</td></tr>';
+        }
+        var grand = empTotal + empTotalE;
+
+        document.getElementById('result').innerHTML =
+          '<p class="big">Employee pays: ' + cny.format(empTotal) + ' / mo</p>' +
+          '<p class="big">Employer pays: ' + cny.format(empTotalE) + ' / mo</p>' +
+          '<p class="big">Total cost: ' + cny.format(grand) + ' / mo</p>' +
+          '<table class="breakdown"><thead><tr><th>Item</th><th>Emp&nbsp;%</th><th>Emp&nbsp;CNY</th><th>Er&nbsp;%</th><th>Er&nbsp;CNY</th></tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+          '<tfoot><tr><td>Total</td><td></td><td>' + cny.format(empTotal) + '</td><td></td><td>' + cny.format(empTotalE) + '</td></tr></tfoot>' +
+          '</table>' +
+          '<p class="note">Estimates for <strong>' + city + '</strong> use representative national rates (Pension 8/16, Medical 2/9, Unemployment 0.5/0.5, Injury 0/0.4, Maternity 0/0.8, Housing fund 7/7). Actual rates, base caps and floors vary by city and over time — e.g. Beijing\'s employer medical rate differs, and the housing-fund rate ranges 5%–12%. Verify with the local social-insurance bureau.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

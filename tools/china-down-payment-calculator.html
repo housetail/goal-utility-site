@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China Down Payment Calculator (by City &amp; Home Type) — China Finance Tools</title>
+  <meta name="description" content="Estimate the required down payment for a home in China based on city tier and first vs second home." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"SoftwareApplication","name":"China Down Payment Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate the required down payment for a home in China based on city tier and first vs second home." }</script>
+  <script type="application/ld+json">{ "@context":"https://schema.org","@type":"FAQPage","mainEntity":[ { "@type":"Question","name":"What is the minimum down payment?","acceptedAnswer":{ "@type":"Answer","text":"Commonly 20% for a first home outside tier-1 cities and 30-35% in tier-1; second homes require more." } }, { "@type":"Question","name":"Does it vary by city?","acceptedAnswer":{ "@type":"Answer","text":"Yes, local governments adjust ratios; always confirm with the current local policy." } }, { "@type":"Question","name":"Can foreigners buy property in China?","acceptedAnswer":{ "@type":"Answer","text":"Restrictions apply; foreigners generally may buy one self-use home and must meet residency/work conditions." } } ] }</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+  <main class="tool-main">
+    <div class="tool-head"><h1>China Down Payment Calculator</h1><p class="lede">Chinese cities set different minimum down payments. Estimate yours by city tier and whether it is your first or second home.</p></div>
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <label class="field">Property price (CNY)
+          <input type="number" id="price" min="0" step="10000" value="5000000" required />
+        </label>
+        <label class="field">City tier
+          <select id="tier">
+            <option value="tier1">Tier 1 (Beijing/Shanghai/Shenzhen/Guangzhou)</option>
+            <option value="other">Other cities</option>
+          </select>
+        </label>
+        <label class="field">Home type
+          <select id="home">
+            <option value="first">First home</option>
+            <option value="second">Second home</option>
+          </select>
+        </label>
+        <button type="submit" class="btn">Calculate</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </section>
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>What is the minimum down payment?</summary><p>Commonly 20% for a first home outside tier-1 cities and 30-35% in tier-1; second homes require more.</p></details>
+      <details><summary>Does it vary by city?</summary><p>Yes, local governments adjust ratios; always confirm with the current local policy.</p></details>
+      <details><summary>Can foreigners buy property in China?</summary><p>Restrictions apply; foreigners generally may buy one self-use home and must meet residency/work conditions.</p></details>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('calc-form');
+      var result = document.getElementById('result');
+      var cny = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 });
+
+      var RATES = {
+        'tier1-first': 0.35,
+        'other-first': 0.20,
+        'tier1-second': 0.70,
+        'other-second': 0.30
+      };
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var price = parseFloat(document.getElementById('price').value);
+        var tier = document.getElementById('tier').value;
+        var home = document.getElementById('home').value;
+
+        if (!isFinite(price) || price <= 0) {
+          result.innerHTML = '<p class="note">Please enter a valid property price.</p>';
+          return;
+        }
+
+        var key = tier + '-' + home;
+        var downPct = RATES[key];
+        var down = price * downPct;
+        var loan = price - down;
+
+        result.innerHTML =
+          '<p class="big">' + (downPct * 100).toFixed(0) + '% down payment</p>' +
+          '<p>Minimum down payment: <strong>' + cny.format(down) + '</strong></p>' +
+          '<p>Maximum mortgage (loan): <strong>' + cny.format(loan) + '</strong></p>' +
+          '<p class="note">Assumptions: first home in a tier-1 city requires 35% down; first home in other cities 20%; ' +
+          'second home in tier-1 cities 70%; second home elsewhere 30%. These are representative minimums — ' +
+          'local governments adjust ratios over time and by district, and individual banks may require more. ' +
+          'Rules change, so confirm the current policy with your bank or local housing authority.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>
