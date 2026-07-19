@@ -1,0 +1,1 @@
+# Disable Jekyll so static files (assets/, tools/) are served exactly as-is.
