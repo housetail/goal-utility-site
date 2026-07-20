@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expat Income Tax &amp; Take-Home Calculator (China) — China Finance Tools</title>
+  <meta name="description" content="Estimate your monthly individual income tax in China as a foreigner: enter monthly salary &amp; bonus, city social-insurance rates, and special additional deductions to see 五险一金, IIT and take-home pay." />
+  <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
+  <script type="application/ld+json">
+  { "@context":"https://schema.org","@type":"SoftwareApplication","name":"Expat Income Tax & Take-Home Calculator (China)","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate monthly individual income tax, 五险一金 and take-home pay for foreigners in China." }
+  </script>
+  <script type="application/ld+json">
+  { "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"Who pays individual income tax (IIT) in China as a foreigner?","acceptedAnswer":{"@type":"Answer","text":"Both tax residents (183-day rule) and non-residents pay IIT on China-sourced income. Residents are also taxed on worldwide income."}},
+    {"@type":"Question","name":"What is the 5,000 RMB monthly threshold?","acceptedAnswer":{"@type":"Answer","text":"It is the basic deduction (基本减除费用). Residents can further deduct 五险一金 (social insurance + housing fund) and special additional deductions before tax."}},
+    {"@type":"Question","name":"Do 五险一金 apply to foreigners?","acceptedAnswer":{"@type":"Answer","text":"In most cities foreigners participate in pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB."}},
+    {"@type":"Question","name":"Can expats claim special additional deductions (专项附加扣除)?","acceptedAnswer":{"@type":"Answer","text":"They are available to tax residents. Non-residents generally cannot claim them, so switch the resident/non-resident toggle accordingly."}},
+    {"@type":"Question","name":"How is the tax computed?","acceptedAnswer":{"@type":"Answer","text":"Residents use the cumulative withholding method (累计预扣法) on a progressive annual table; non-residents use the simplified monthly method."}},
+    {"@type":"Question","name":"Is this an official calculation?","acceptedAnswer":{"@type":"Answer","text":"No. It is an estimate for planning only. Verify rates, bases and rules with the local tax bureau (税务局) and a qualified advisor."}}
+  ] }
+  </script>
+  <style>
+    .seg { display:inline-flex; border:1px solid var(--border); border-radius:999px; padding:3px; background:#fff; }
+    .seg-opt { padding:8px 16px; border-radius:999px; cursor:pointer; font-size:14px; font-weight:600; color:var(--muted); }
+    .seg-opt.on { background:var(--primary); color:#fff; }
+    .seg-opt input { display:none; }
+    .range { font-weight:400; font-size:12px; color:var(--muted); margin-left:6px; }
+    .hint-btn { margin-left:6px; color:var(--primary); text-decoration:none; font-weight:700; border:1px solid var(--border); border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; }
+    .hint-btn:hover { text-decoration:none; background:rgba(31,78,140,0.08); }
+    .subhead { font-weight:700; margin:20px 0 8px; color:var(--primary-dark); font-size:15px; border-left:3px solid var(--accent); padding-left:10px; }
+    .mini-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .mini-table th, .mini-table td { padding:6px 8px; border-bottom:1px solid var(--border); text-align:left; }
+    .mini-table input { width:74px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
+    .mini-table .fx { font-size:11px; color:var(--muted); }
+    .month-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .month-table input { width:100%; padding:7px 8px; border:1px solid var(--border); border-radius:8px; font-size:14px; box-sizing:border-box; }
+    .sad-item { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:7px 0; border-bottom:1px dashed var(--border); }
+    .sad-chk { display:flex; align-items:center; gap:7px; font-weight:600; font-size:14px; }
+    .sad-note { font-weight:400; font-size:12px; color:var(--muted); }
+    .sad-num, .sad-item select { padding:5px 8px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
+    .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:6px 0 18px; }
+    .sc { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .sc .k { font-size:12px; color:var(--muted); }
+    .sc .v { font-size:20px; font-weight:700; color:var(--primary-dark); margin-top:4px; }
+    .sc.hl { background:rgba(199,154,58,0.10); border-color:rgba(199,154,58,0.4); }
+    .sc.hl .v { color:var(--accent); }
+    .table-scroll { overflow-x:auto; }
+    .result .month-table { margin-top:10px; }
+    .result .month-table th, .result .month-table td { padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+    .result .month-table th { background:rgba(31,78,140,0.06); color:var(--primary-dark); font-size:13px; }
+    .result .month-table td.hl, .result .month-table tfoot td.hl { color:var(--accent); font-weight:700; }
+    .result .month-table tfoot td { font-weight:700; border-top:2px solid var(--border); }
+    .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+    .btn.secondary { background:#fff; color:var(--primary); border:1px solid var(--primary); }
+    .btn.secondary:hover { background:rgba(31,78,140,0.06); }
+    .msg { font-size:13px; color:var(--accent); font-weight:600; margin-top:10px; min-height:18px; }
+    .fill-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px; }
+    .fill-row .field { flex:1; min-width:140px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="dot"></span> China Finance Tools</div>
+    <nav class="site-nav"><a href="../index.html">All tools</a></nav>
+  </header>
+
+  <main class="tool-main">
+    <div class="tool-head">
+      <h1>Expat Income Tax &amp; Take-Home Calculator</h1>
+      <p class="lede">For foreigners working in China: enter your monthly salary &amp; bonus, your city's 五险一金 rates, and any special additional deductions to see monthly IIT and take-home pay.</p>
+    </div>
+
+    <section class="panel">
+      <form id="calc-form" class="tool-form">
+        <div class="field">
+          <span>Tax status</span>
+          <div class="seg" id="resident-seg">
+            <label class="seg-opt on"><input type="radio" name="resident" id="resident-resident" value="resident" checked> Resident (居民)</label>
+            <label class="seg-opt"><input type="radio" name="resident" id="resident-nonresident" value="nonresident"> Non-resident (非居民)</label>
+          </div>
+          <span class="hint">Residents use cumulative withholding (累计预扣法); non-residents use the simplified monthly method. Special additional deductions apply to residents.</span>
+        </div>
+
+        <label class="field">City
+          <select id="city">
+            <option value="Beijing">Beijing (北京)</option>
+            <option value="Shanghai">Shanghai (上海)</option>
+            <option value="Shenzhen">Shenzhen (深圳)</option>
+            <option value="Guangzhou">Guangzhou (广州)</option>
+            <option value="Generic">Generic (全国代表值)</option>
+          </select>
+        </label>
+
+        <div class="subhead">五险一金 — social insurance &amp; housing fund</div>
+        <div id="social-rates"></div>
+        <div class="row">
+          <label class="field">社保缴费基数 Social-insurance base (CNY)
+            <span id="social-range" class="range"></span>
+            <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
+            <input id="social-base" type="number" step="100" />
+          </label>
+          <label class="field">公积金缴存基数 Housing-fund base (CNY)
+            <span id="housing-range" class="range"></span>
+            <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
+            <input id="housing-base" type="number" step="100" />
+          </label>
+        </div>
+        <label class="field">公积金缴存比例 Housing-fund rate (%)
+          <span id="housing-rate-range" class="range"></span>
+          <input id="housing-rate" type="number" step="0.5" />
+        </label>
+
+        <div class="subhead">Monthly income — list each month</div>
+        <div class="fill-row">
+          <label class="field">Fill all base (固定)
+            <input id="fill-base" type="number" step="100" placeholder="e.g. 30000" />
+          </label>
+          <label class="field">Fill all bonus (浮动)
+            <input id="fill-bonus" type="number" step="100" placeholder="e.g. 0" />
+          </label>
+          <button type="button" class="btn secondary" id="fill-all">Apply to all 12</button>
+        </div>
+        <div id="monthly-table"></div>
+
+        <div class="subhead">专项附加扣除 — special additional deductions</div>
+        <div id="sad-list"></div>
+        <p class="msg" id="sad-total"></p>
+
+        <div class="btn-row">
+          <button class="btn" type="submit">Calculate</button>
+          <button class="btn secondary" type="button" id="save-btn">Save to browser</button>
+          <button class="btn secondary" type="button" id="reset-btn">Reset</button>
+        </div>
+        <p class="msg" id="msg"></p>
+      </form>
+    </section>
+
+    <div id="result" class="result" role="status" aria-live="polite"></div>
+
+    <div class="ad-box" aria-label="Advertisement">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8247564773527384" data-ad-slot="8137669998" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+
+    <section class="faq">
+      <h2>Frequently asked questions</h2>
+      <details><summary>Who pays IIT in China as a foreigner?</summary><p>Both tax residents (the 183-day rule) and non-residents pay IIT on China-sourced income. Residents are also taxed on worldwide income; non-residents only on China-sourced income.</p></details>
+      <details><summary>What is the 5,000 RMB monthly threshold?</summary><p>It is the basic deduction (基本减除费用). Residents can further deduct 五险一金 and special additional deductions before computing tax.</p></details>
+      <details><summary>Do 五险一金 apply to foreigners?</summary><p>In most cities foreigners join pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB.</p></details>
+      <details><summary>Can expats claim special additional deductions?</summary><p>They are available to tax residents. Non-residents generally cannot claim them, so keep the toggle on "Resident" if you qualify.</p></details>
+      <details><summary>How is the tax computed?</summary><p>Residents use cumulative withholding (累计预扣法) on a progressive annual table, which correctly handles monthly variable bonuses. Non-residents use the simplified monthly method.</p></details>
+      <details><summary>Is this an official calculation?</summary><p>No. It is an estimate for planning only. Verify rates, bases and rules with the local tax bureau (税务局) and a qualified advisor.</p></details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>&copy; <span id="year">2026</span> China Finance Tools · <a href="../index.html">Home</a> · <a href="../privacy.html">Privacy</a></small>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script src="../assets/tax-calc.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var T = window.TaxCalc;
+    var STORAGE_KEY = 'expat-tax-settings-v1';
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var ITEMS = ['pension','medical','unemployment','injury','maternity'];
+    var LABELS = {
+      pension: 'Pension 养老', medical: 'Medical 医疗', unemployment: 'Unemployment 失业',
+      injury: 'Work injury 工伤', maternity: 'Maternity 生育'
+    };
+    var cny = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 });
+    function el(id) { return document.getElementById(id); }
+    function fmt(n) { return cny.format(n); }
+
+    // ---------- build UI ----------
+    function buildMonthly() {
+      var html = '<table class="month-table"><thead><tr><th>Month</th><th>Base salary (固定)</th><th>Bonus (浮动)</th></tr></thead><tbody>';
+      for (var i = 1; i <= 12; i++) {
+        html += '<tr><td>' + MONTHS[i - 1] + '</td>' +
+          '<td><input type="number" id="base' + i + '" value="30000" step="100"></td>' +
+          '<td><input type="number" id="bonus' + i + '" value="0" step="100"></td></tr>';
+      }
+      html += '</tbody></table>';
+      el('monthly-table').innerHTML = html;
+    }
+
+    function renderSocialRates(cityKey, savedRates) {
+      var city = T.getCity(cityKey);
+      var html = '<table class="mini-table"><thead><tr><th>Item</th><th>Employee %</th><th>Employer %</th></tr></thead><tbody>';
+      ITEMS.forEach(function (k) {
+        var d = city.social.items[k];
+        var emp = (savedRates && savedRates[k]) ? savedRates[k].emp : d.emp;
+        var er = (savedRates && savedRates[k]) ? savedRates[k].er : d.er;
+        var fx = d.empFixed ? ' <span class="fx">(+' + d.empFixed + '元)</span>' : '';
+        html += '<tr><td>' + LABELS[k] + fx + '</td>' +
+          '<td><input type="number" step="0.1" data-k="' + k + '" data-side="emp" value="' + emp + '"></td>' +
+          '<td><input type="number" step="0.1" data-k="' + k + '" data-side="er" value="' + er + '"></td></tr>';
+      });
+      html += '</tbody></table>';
+      el('social-rates').innerHTML = html;
+    }
+
+    function firstMonthBase() { var b = parseFloat(el('base1').value); return isNaN(b) ? 0 : b; }
+    function defaultBase(rng) { var v = firstMonthBase() > 0 ? firstMonthBase() : 20000; return T.clamp(v, rng.baseLower, rng.baseUpper); }
+
+    function renderCity(cityKey, opts) {
+      opts = opts || {};
+      var city = T.getCity(cityKey);
+      renderSocialRates(cityKey, opts.rateOverrides);
+      var sb = el('social-base'), hb = el('housing-base'), hr = el('housing-rate');
+      if (opts.socialBase != null) sb.value = opts.socialBase; else if (!sb.value) sb.value = defaultBase(city.social);
+      sb.min = city.social.baseLower; sb.max = city.social.baseUpper;
+      el('social-range').textContent = '范围 ' + city.social.baseLower.toLocaleString() + ' – ' + city.social.baseUpper.toLocaleString();
+      el('social-hint').href = city.social.verify;
+      if (opts.housingBase != null) hb.value = opts.housingBase; else if (!hb.value) hb.value = defaultBase(city.housing);
+      hb.min = city.housing.baseLower; hb.max = city.housing.baseUpper;
+      el('housing-range').textContent = '范围 ' + city.housing.baseLower.toLocaleString() + ' – ' + city.housing.baseUpper.toLocaleString();
+      el('housing-hint').href = city.housing.verify;
+      if (opts.housingRate != null) hr.value = opts.housingRate; else if (!hr.value) hr.value = city.housing.rateDefault;
+      hr.min = city.housing.rateMin; hr.max = city.housing.rateMax;
+      el('housing-rate-range').textContent = '范围 ' + city.housing.rateMin + '% – ' + city.housing.rateMax + '%';
+    }
+
+    function buildSad() {
+      var html = '';
+      for (var k in T.SAD) {
+        var d = T.SAD[k];
+        var id = 'sad-' + k;
+        html += '<div class="sad-item"><label class="sad-chk"><input type="checkbox" id="' + id + '-on"> ' + d.label +
+          ' <span class="sad-note">' + d.note + '</span></label>';
+        if (d.hasCount) html += ' <input type="number" min="1" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="数量">';
+        else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">独生 3000</option><option value="0">非独 1500</option></select>';
+        else if (d.tiers) html += ' <select id="' + id + '-tier">' + d.tiers.map(function (t) { return '<option value="' + t + '">' + t + '/月</option>'; }).join('') + '</select>';
+        else if (d.custom) html += ' <input type="number" min="0" id="' + id + '-amt" value="0" class="sad-num" title="月度估算">';
+        html += '</div>';
+      }
+      el('sad-list').innerHTML = html;
+      el('sad-list').addEventListener('change', updateSadTotal);
+      el('sad-list').addEventListener('input', updateSadTotal);
+      updateSadTotal();
+    }
+
+    function getSadSelections() {
+      var sel = {};
+      for (var k in T.SAD) {
+        var id = 'sad-' + k, d = T.SAD[k];
+        if (!el(id + '-on').checked) continue;
+        var item = { on: true };
+        if (d.hasCount) item.count = parseInt(el(id + '-count').value, 10) || d.defaultCount;
+        if (d.onlyChild) item.onlyChild = el(id + '-oc').value === '1';
+        if (d.tiers) item.amount = parseInt(el(id + '-tier').value, 10) || d.perMonth;
+        if (d.custom) item.amount = parseFloat(el(id + '-amt').value) || 0;
+        sel[k] = item;
+      }
+      return sel;
+    }
+
+    function updateSadTotal() {
+      var t = T.calcSAD(getSadSelections());
+      el('sad-total').textContent = 'Monthly special-additional deduction: ' + fmt(t);
+    }
+
+    // ---------- read / compute ----------
+    function getInputs() {
+      var resident = el('resident-resident').checked;
+      var city = el('city').value;
+      var socialBase = parseFloat(el('social-base').value) || 0;
+      var housingBase = parseFloat(el('housing-base').value) || 0;
+      var housingRate = parseFloat(el('housing-rate').value);
+      if (isNaN(housingRate)) housingRate = T.getCity(city).housing.rateDefault;
+      var rateOverrides = {};
+      ITEMS.forEach(function (k) {
+        rateOverrides[k] = {
+          emp: parseFloat(document.querySelector('input[data-k="' + k + '"][data-side="emp"]').value) || 0,
+          er: parseFloat(document.querySelector('input[data-k="' + k + '"][data-side="er"]').value) || 0
+        };
+      });
+      var monthly = [];
+      for (var i = 1; i <= 12; i++) {
+        monthly.push({ base: parseFloat(el('base' + i).value) || 0, bonus: parseFloat(el('bonus' + i).value) || 0 });
+      }
+      var sad = getSadSelections();
+      var sadMonthly = T.calcSAD(sad);
+      return { resident: resident, city: city, socialBase: socialBase, housingBase: housingBase, housingRate: housingRate, rateOverrides: rateOverrides, monthly: monthly, sadMonthly: sadMonthly, sad: sad };
+    }
+
+    function renderResult(res, inp) {
+      var s = res.summary, h = res.housing, socEmp = res.social.empTotal;
+      var headTaxable = inp.resident ? '累计应纳税所得额' : '当月应税所得额';
+      var html = '';
+      html += '<div class="summary-cards">' +
+        card('全年税前 Annual gross', fmt(s.yearGross)) +
+        card('全年五险一金(个人) Employee 五险一金', fmt(s.yearSocialEmp)) +
+        card('全年个税 Annual IIT', fmt(s.yearTax)) +
+        card('全年到手 Annual take-home', fmt(s.yearTakeHome), true) +
+        card('月均到手 Avg / month', fmt(s.avgMonthlyTakeHome), true) +
+        '</div>';
+
+      html += '<h3 style="margin:6px 0 8px;color:var(--primary-dark)">Monthly deductions (employee)</h3>';
+      html += '<table class="mini-table"><thead><tr><th>Item</th><th>CNY / month</th></tr></thead><tbody>';
+      ITEMS.forEach(function (k) {
+        if (res.social.items[k].emp > 0 || T.getCity(inp.city).social.items[k].empFixed)
+          html += '<tr><td>' + LABELS[k] + '</td><td>' + fmt(res.social.items[k].emp) + '</td></tr>';
+      });
+      html += '<tr><td>Housing fund 公积金</td><td>' + fmt(h.emp) + '</td></tr>';
+      html += '<tr><td><strong>Special additional deductions 专项附加扣除</strong></td><td><strong>' + fmt(inp.sadMonthly) + '</strong></td></tr>';
+      html += '</tbody></table>';
+
+      html += '<h3 style="margin:18px 0 8px;color:var(--primary-dark)">Monthly breakdown</h3>';
+      html += '<div class="table-scroll"><table class="month-table"><thead><tr><th>Month</th><th>税前收入</th><th>五险一金(个人)</th><th>公积金(个人)</th><th>' + headTaxable + '</th><th>当月个税</th><th>到手</th></tr></thead><tbody>';
+      res.months.forEach(function (m) {
+        html += '<tr><td>' + MONTHS[m.month - 1] + '</td>' +
+          '<td>' + fmt(m.gross) + '</td>' +
+          '<td>' + fmt(m.socialEmp - m.housingEmp) + '</td>' +
+          '<td>' + fmt(m.housingEmp) + '</td>' +
+          '<td>' + fmt(m.taxable) + '</td>' +
+          '<td>' + fmt(m.tax) + '</td>' +
+          '<td class="hl">' + fmt(m.takeHome) + '</td></tr>';
+      });
+      html += '<tfoot><tr><td>全年</td><td>' + fmt(s.yearGross) + '</td>' +
+        '<td>' + fmt(socEmp * 12) + '</td>' +
+        '<td>' + fmt(h.emp * 12) + '</td>' +
+        '<td>—</td><td>' + fmt(s.yearTax) + '</td>' +
+        '<td class="hl">' + fmt(s.yearTakeHome) + '</td></tr></tfoot>';
+      html += '</table></div>';
+
+      html += '<p class="note">Your employer also contributes about ' + fmt(s.yearEmployer) + ' / year (not deducted from your pay). ' +
+        'Estimates only — rates, base caps and the 5,000 threshold change; verify with the local tax / social-insurance bureau and a qualified advisor. ' +
+        'Special additional deductions apply to tax residents; switch to "Non-resident" if you do not qualify.</p>';
+      el('result').innerHTML = html;
+    }
+    function card(k, v, hl) { return '<div class="sc' + (hl ? ' hl' : '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
+
+    // ---------- persistence ----------
+    function saveSettings() {
+      var inp = getInputs();
+      var storable = {
+        resident: inp.resident, city: inp.city, socialBase: inp.socialBase, housingBase: inp.housingBase,
+        housingRate: inp.housingRate, rateOverrides: inp.rateOverrides, monthly: inp.monthly, sad: inp.sad
+      };
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storable)); flash('Saved to this browser.'); }
+      catch (e) { flash('Could not save (storage blocked).'); }
+    }
+    function applySad(sad) {
+      for (var k in T.SAD) {
+        var id = 'sad-' + k, d = T.SAD[k], item = sad[k];
+        if (!item || !item.on) continue;
+        el(id + '-on').checked = true;
+        if (d.hasCount && item.count != null) el(id + '-count').value = item.count;
+        if (d.onlyChild) el(id + '-oc').value = item.onlyChild ? '1' : '0';
+        if (d.tiers && item.amount != null) el(id + '-tier').value = String(item.amount);
+        if (d.custom && item.amount != null) el(id + '-amt').value = item.amount;
+      }
+    }
+    function loadSettings() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        var s = JSON.parse(raw);
+        (s.resident ? el('resident-resident') : el('resident-nonresident')).checked = true;
+        syncSeg();
+        el('city').value = s.city || 'Beijing';
+        renderCity(s.city || 'Beijing', {
+          rateOverrides: s.rateOverrides, socialBase: s.socialBase, housingBase: s.housingBase, housingRate: s.housingRate
+        });
+        (s.monthly || []).forEach(function (row, i) {
+          if (el('base' + (i + 1))) { el('base' + (i + 1)).value = row.base != null ? row.base : ''; el('bonus' + (i + 1)).value = row.bonus != null ? row.bonus : ''; }
+        });
+        if (s.sad) applySad(s.sad);
+        updateSadTotal();
+        return true;
+      } catch (e) { return false; }
+    }
+    function resetSettings() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      el('resident-resident').checked = true; syncSeg();
+      el('city').value = 'Beijing';
+      for (var i = 1; i <= 12; i++) { el('base' + i).value = 30000; el('bonus' + i).value = 0; }
+      renderCity('Beijing', {});
+      el('sad-list').querySelectorAll('input[type=checkbox]').forEach(function (c) { c.checked = false; });
+      el('sad-list').querySelectorAll('select').forEach(function (s) { s.selectedIndex = 0; });
+      el('sad-list').querySelectorAll('.sad-num').forEach(function (n) { if (n.id.indexOf('-count') >= 0) n.value = 1; else n.value = 0; });
+      updateSadTotal();
+      flash('Reset to defaults.');
+    }
+    function flash(m) { el('msg').textContent = m; }
+
+    function syncSeg() {
+      document.querySelectorAll('.seg-opt').forEach(function (l) { l.classList.remove('on'); });
+      var checked = document.querySelector('input[name="resident"]:checked');
+      if (checked) checked.closest('.seg-opt').classList.add('on');
+    }
+
+    // ---------- wire up ----------
+    document.querySelectorAll('input[name="resident"]').forEach(function (r) {
+      r.addEventListener('change', syncSeg);
+    });
+    el('city').addEventListener('change', function () {
+      renderCity(el('city').value, {});
+    });
+    el('fill-all').addEventListener('click', function () {
+      var b = parseFloat(el('fill-base').value) || 0, bo = parseFloat(el('fill-bonus').value) || 0;
+      for (var i = 1; i <= 12; i++) { el('base' + i).value = b; el('bonus' + i).value = bo; }
+    });
+    el('save-btn').addEventListener('click', saveSettings);
+    el('reset-btn').addEventListener('click', resetSettings);
+    el('calc-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var inp = getInputs();
+      var res = T.computeSchedule(inp);
+      renderResult(res, inp);
+    });
+
+    // ---------- init ----------
+    buildMonthly();
+    buildSad();
+    renderCity('Beijing', {});
+    if (!loadSettings()) { updateSadTotal(); }
+  })();
+  </script>
+</body>
+</html>
