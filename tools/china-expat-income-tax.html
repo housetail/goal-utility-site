@@ -514,8 +514,9 @@
       if (isNaN(b)) b = 0; if (isNaN(bo)) bo = 0;
       for (var i = 1; i <= 12; i++) { el('base' + i).value = b; el('bonus' + i).value = bo; }
       if (el('sync-base').checked && b > 0) {
-        el('social-base').value = b;
-        el('housing-base').value = b;
+        var c = T.getCity(el('city').value);
+        el('social-base').value = T.clamp(b, c.social.baseLower, c.social.baseUpper);
+        el('housing-base').value = T.clamp(b, c.housing.baseLower, c.housing.baseUpper);
         markAuto();
       }
     });
