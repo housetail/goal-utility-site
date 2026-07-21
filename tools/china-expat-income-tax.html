@@ -47,11 +47,34 @@
     .sc.hl { background:rgba(199,154,58,0.10); border-color:rgba(199,154,58,0.4); }
     .sc.hl .v { color:var(--accent); }
     .table-scroll { overflow-x:auto; }
-    .result .month-table { margin-top:10px; }
-    .result .month-table th, .result .month-table td { padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
-    .result .month-table th { background:rgba(31,78,140,0.06); color:var(--primary-dark); font-size:13px; }
+    .result .month-table { margin-top:10px; font-size:14px; }
+    .result .month-table th, .result .month-table td { padding:7px 9px; border-bottom:1px solid var(--border); }
+    .result .month-table thead th { background:rgba(31,78,140,0.06); color:var(--primary-dark); white-space:normal; vertical-align:bottom; text-align:left; }
+    .result .month-table th .en { display:block; font-size:13px; font-weight:600; line-height:1.2; }
+    .result .month-table th .cn { display:block; font-size:11px; color:var(--muted); font-weight:400; line-height:1.2; margin-top:2px; }
+    .result .month-table tbody td { white-space:nowrap; }
     .result .month-table td.hl, .result .month-table tfoot td.hl { color:var(--accent); font-weight:700; }
     .result .month-table tfoot td { font-weight:700; border-top:2px solid var(--border); }
+    /* keep the Month column pinned while scrolling horizontally */
+    .result .month-table thead th:first-child,
+    .result .month-table tbody td:first-child,
+    .result .month-table tfoot td:first-child { position:sticky; left:0; background:#fff; z-index:1; }
+    .result .month-table thead th:first-child { z-index:3; background:rgba(31,78,140,0.06); }
+    .result .month-table tfoot td:first-child { background:#fff; }
+    .table-legend { font-size:12px; color:var(--muted); margin-top:8px; line-height:1.5; }
+    /* narrow screens: turn each month into a stacked label/value card (no horizontal scroll) */
+    @media (max-width: 640px) {
+      .result .month-table thead { display:none; }
+      .result .month-table tbody, .result .month-table tr, .result .month-table td { display:block; width:100%; }
+      .result .month-table tr { border:1px solid var(--border); border-radius:10px; margin-bottom:10px; padding:4px 2px; }
+      .result .month-table tbody td { white-space:normal; display:flex; justify-content:space-between; gap:12px; align-items:center; border-bottom:1px dashed var(--border); }
+      .result .month-table tbody td:last-child { border-bottom:none; }
+      .result .month-table tbody td::before { content: attr(data-label); font-weight:600; color:var(--primary-dark); font-size:13px; }
+      .result .month-table tbody td.hl::before { color:var(--accent); }
+      .result .month-table thead th:first-child, .result .month-table tbody td:first-child { position:static; background:transparent; }
+      .result .month-table tbody td:first-child { font-weight:700; background:rgba(31,78,140,0.06); border-radius:8px 8px 0 0; }
+      .result .month-table tfoot { display:none; }
+    }
     .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
     .btn.secondary { background:#fff; color:var(--primary); border:1px solid var(--primary); }
     .btn.secondary:hover { background:rgba(31,78,140,0.06); }
@@ -314,7 +337,6 @@
 
     function renderResult(res, inp) {
       var s = res.summary, h = res.housing, socEmp = res.social.empTotal;
-      var headTaxable = inp.resident ? 'Cumulative taxable income (累计应纳税所得额)' : 'Monthly taxable income (当月应税所得额)';
       var html = '';
       html += '<div class="summary-cards">' +
         card('Annual gross (全年税前)', fmt(s.yearGross)) +
@@ -335,22 +357,38 @@
       html += '</tbody></table>';
 
       html += '<h3 style="margin:18px 0 8px;color:var(--primary-dark)">Monthly breakdown</h3>';
-      html += '<div class="table-scroll"><table class="month-table"><thead><tr><th>Month</th><th>Pre-tax income (税前收入)</th><th>Social ins. &amp; housing fund (五险一金, employee)</th><th>Housing fund (公积金, employee)</th><th>' + headTaxable + '</th><th>Monthly IIT (当月个税)</th><th>Take-home (到手)</th></tr></thead><tbody>';
+      var thCell = function (en, cn) { return '<th><span class="en">' + en + '</span><span class="cn">' + cn + '</span></th>'; };
+      html += '<div class="table-scroll"><table class="month-table"><thead><tr>'
+        + thCell('Month', '月份')
+        + thCell('Pre-tax', '税前')
+        + thCell('Social ins.*', '五险一金·个人')
+        + thCell('Housing fund', '公积金·个人')
+        + thCell('Taxable*', inp.resident ? '累计应税' : '当月应税')
+        + thCell('IIT', '个税')
+        + thCell('Take-home', '到手')
+        + '</tr></thead><tbody>';
       res.months.forEach(function (m) {
-        html += '<tr><td>' + MONTHS[m.month - 1] + '</td>' +
-          '<td>' + fmt(m.gross) + '</td>' +
-          '<td>' + fmt(m.socialEmp - m.housingEmp) + '</td>' +
-          '<td>' + fmt(m.housingEmp) + '</td>' +
-          '<td>' + fmt(m.taxable) + '</td>' +
-          '<td>' + fmt(m.tax) + '</td>' +
-          '<td class="hl">' + fmt(m.takeHome) + '</td></tr>';
+        html += '<tr>'
+          + '<td data-label="Month (月份)">' + MONTHS[m.month - 1] + '</td>'
+          + '<td data-label="Pre-tax (税前)">' + fmt(m.gross) + '</td>'
+          + '<td data-label="Social ins.* (五险一金·个人)">' + fmt(m.socialEmp - m.housingEmp) + '</td>'
+          + '<td data-label="Housing fund (公积金·个人)">' + fmt(m.housingEmp) + '</td>'
+          + '<td data-label="Taxable* (应税)">' + fmt(m.taxable) + '</td>'
+          + '<td data-label="IIT (个税)">' + fmt(m.tax) + '</td>'
+          + '<td class="hl" data-label="Take-home (到手)">' + fmt(m.takeHome) + '</td>'
+          + '</tr>';
       });
-      html += '<tfoot><tr><td>全年</td><td>' + fmt(s.yearGross) + '</td>' +
-        '<td>' + fmt(socEmp * 12) + '</td>' +
-        '<td>' + fmt(h.emp * 12) + '</td>' +
-        '<td>—</td><td>' + fmt(s.yearTax) + '</td>' +
-        '<td class="hl">' + fmt(s.yearTakeHome) + '</td></tr></tfoot>';
+      html += '<tfoot><tr>'
+        + '<td data-label="Year (全年)">全年</td>'
+        + '<td data-label="Pre-tax (税前)">' + fmt(s.yearGross) + '</td>'
+        + '<td data-label="Social ins.* (五险一金·个人)">' + fmt(socEmp * 12) + '</td>'
+        + '<td data-label="Housing fund (公积金·个人)">' + fmt(h.emp * 12) + '</td>'
+        + '<td data-label="Taxable* (应税)">—</td>'
+        + '<td data-label="IIT (个税)">' + fmt(s.yearTax) + '</td>'
+        + '<td class="hl" data-label="Take-home (到手)">' + fmt(s.yearTakeHome) + '</td>'
+        + '</tr></tfoot>';
       html += '</table></div>';
+      html += '<p class="table-legend">* Social ins. (五险一金·个人) excludes the housing fund, shown in its own column. Taxable = cumulative taxable income for residents, monthly taxable income for non-residents.</p>';
 
       html += '<p class="note">Your employer also contributes about ' + fmt(s.yearEmployer) + ' / year (not deducted from your pay). ' +
         'Estimates only — rates, base caps and the 5,000 threshold change; verify with the local tax / social-insurance bureau and a qualified advisor. ' +
