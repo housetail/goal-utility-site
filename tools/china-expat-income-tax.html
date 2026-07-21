@@ -94,8 +94,14 @@
     .btn.secondary { background:#fff; color:var(--primary); border:1px solid var(--primary); }
     .btn.secondary:hover { background:rgba(31,78,140,0.06); }
     .msg { font-size:13px; color:var(--accent); font-weight:600; margin-top:10px; min-height:18px; }
-    .fill-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px; }
+    .fill-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:8px; }
     .fill-row .field { flex:1; min-width:140px; }
+    .sync-field { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin:2px 0 6px; cursor:pointer; }
+    .sync-field input { width:auto; }
+    .auto-note { display:none; font-size:11px; color:var(--accent); margin-top:3px; }
+    .field.auto-filled input { background:rgba(199,154,58,0.07); }
+    .field.auto-filled .auto-note { display:block; }
+    .flow-num { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--primary); color:#fff; font-size:12px; font-weight:700; margin-right:8px; }
   </style>
 </head>
 <body>
@@ -107,7 +113,7 @@
   <main class="tool-main">
     <div class="tool-head">
       <h1>Expat Income Tax &amp; Take-Home Calculator</h1>
-      <p class="lede">For foreigners working in China: enter your monthly salary &amp; bonus, your city's social insurance &amp; housing fund (五险一金) rates, and any special additional deductions to see monthly IIT and take-home pay.</p>
+      <p class="lede">For foreigners working in China: enter your monthly salary &amp; bonus first, and your social-insurance &amp; housing-fund (五险一金) base auto-fills from it. Add any special additional deductions to see monthly IIT and take-home pay.</p>
     </div>
 
     <section class="panel">
@@ -131,26 +137,7 @@
           </select>
         </label>
 
-        <div class="subhead">Social insurance &amp; housing fund (五险一金)</div>
-        <div id="social-rates"></div>
-        <div class="row">
-          <label class="field">Social-insurance base (社保缴费基数, CNY)
-            <span id="social-range" class="range"></span>
-            <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
-            <input id="social-base" type="text" inputmode="decimal" autocomplete="off" />
-          </label>
-          <label class="field">Housing-fund base (公积金缴存基数, CNY)
-            <span id="housing-range" class="range"></span>
-            <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
-            <input id="housing-base" type="text" inputmode="decimal" autocomplete="off" />
-          </label>
-        </div>
-        <label class="field">Housing-fund rate (公积金缴存比例, %)
-          <span id="housing-rate-range" class="range"></span>
-          <input id="housing-rate" type="text" inputmode="decimal" autocomplete="off" />
-        </label>
-
-        <div class="subhead">Monthly income — list each month</div>
+        <div class="subhead"><span class="flow-num">1</span>Monthly income — list each month</div>
         <div class="fill-row">
           <label class="field">Fill all base (固定)
             <input id="fill-base" type="text" inputmode="decimal" placeholder="e.g. 30000" />
@@ -160,7 +147,31 @@
           </label>
           <button type="button" class="btn secondary" id="fill-all">Apply to all 12</button>
         </div>
+        <label class="sync-field"><input type="checkbox" id="sync-base" checked />
+          <span>Auto-fill 五险一金 base from monthly base salary (用月薪自动填充社保/公积金基数)</span>
+        </label>
         <div id="monthly-table"></div>
+
+        <div class="subhead"><span class="flow-num">2</span>Social insurance &amp; housing fund (五险一金)</div>
+        <div id="social-rates"></div>
+        <div class="row">
+          <label class="field">Social-insurance base (社保缴费基数, CNY)
+            <span id="social-range" class="range"></span>
+            <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
+            <input id="social-base" type="text" inputmode="decimal" autocomplete="off" />
+            <span class="auto-note">Auto-filled from your monthly base salary — edit if your contribution base is capped or differs.</span>
+          </label>
+          <label class="field">Housing-fund base (公积金缴存基数, CNY)
+            <span id="housing-range" class="range"></span>
+            <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
+            <input id="housing-base" type="text" inputmode="decimal" autocomplete="off" />
+            <span class="auto-note">Auto-filled from your monthly base salary — edit if your contribution base is capped or differs.</span>
+          </label>
+        </div>
+        <label class="field">Housing-fund rate (公积金缴存比例, %)
+          <span id="housing-rate-range" class="range"></span>
+          <input id="housing-rate" type="text" inputmode="decimal" autocomplete="off" />
+        </label>
 
         <div class="subhead">Special additional deductions (专项附加扣除)</div>
         <div id="sad-list"></div>
@@ -417,7 +428,8 @@
       var inp = getInputs();
       var storable = {
         resident: inp.resident, city: inp.city, socialBase: inp.socialBase, housingBase: inp.housingBase,
-        housingRate: inp.housingRate, rateOverrides: inp.rateOverrides, monthly: inp.monthly, sad: inp.sad
+        housingRate: inp.housingRate, rateOverrides: inp.rateOverrides, monthly: inp.monthly, sad: inp.sad,
+        syncBase: el('sync-base').checked
       };
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storable)); flash('Saved to this browser.'); }
       catch (e) { flash('Could not save (storage blocked).'); }
@@ -444,6 +456,8 @@
         renderCity(s.city || 'Beijing', {
           rateOverrides: s.rateOverrides, socialBase: s.socialBase, housingBase: s.housingBase, housingRate: s.housingRate
         });
+        el('sync-base').checked = (s.syncBase !== false);
+        if (el('sync-base').checked) markAuto();
         (s.monthly || []).forEach(function (row, i) {
           if (el('base' + (i + 1))) { el('base' + (i + 1)).value = row.base != null ? row.base : ''; el('bonus' + (i + 1)).value = row.bonus != null ? row.bonus : ''; }
         });
@@ -458,6 +472,8 @@
       el('city').value = 'Beijing';
       for (var i = 1; i <= 12; i++) { el('base' + i).value = 30000; el('bonus' + i).value = 0; }
       renderCity('Beijing', {});
+      el('sync-base').checked = true;
+      markAuto();
       el('sad-list').querySelectorAll('input[type=checkbox]').forEach(function (c) { c.checked = false; });
       el('sad-list').querySelectorAll('select').forEach(function (s) { s.selectedIndex = 0; });
       el('sad-list').querySelectorAll('.sad-num').forEach(function (n) { if (n.id.indexOf('-count') >= 0) n.value = 1; else n.value = 0; });
@@ -479,10 +495,35 @@
     el('city').addEventListener('change', function () {
       renderCity(el('city').value, {});
     });
+    function markAuto() {
+      ['social-base', 'housing-base'].forEach(function (id) {
+        var lab = el(id).closest('label.field');
+        if (lab) lab.classList.add('auto-filled');
+      });
+    }
+    function unmarkAuto(id) {
+      var lab = el(id).closest('label.field');
+      if (lab) lab.classList.remove('auto-filled');
+      el('sync-base').checked = false;
+    }
     el('fill-all').addEventListener('click', function () {
       var b = parseNum(el('fill-base').value), bo = parseNum(el('fill-bonus').value);
       if (isNaN(b)) b = 0; if (isNaN(bo)) bo = 0;
       for (var i = 1; i <= 12; i++) { el('base' + i).value = b; el('bonus' + i).value = bo; }
+      if (el('sync-base').checked && b > 0) {
+        el('social-base').value = b;
+        el('housing-base').value = b;
+        markAuto();
+      }
+    });
+    el('social-base').addEventListener('input', function () { unmarkAuto('social-base'); });
+    el('housing-base').addEventListener('input', function () { unmarkAuto('housing-base'); });
+    el('sync-base').addEventListener('change', function () {
+      if (!el('sync-base').checked) {
+        ['social-base', 'housing-base'].forEach(function (id) {
+          var lab = el(id).closest('label.field'); if (lab) lab.classList.remove('auto-filled');
+        });
+      }
     });
     el('save-btn').addEventListener('click', saveSettings);
     el('reset-btn').addEventListener('click', resetSettings);
@@ -499,7 +540,10 @@
     buildMonthly();
     buildSad();
     renderCity('Beijing', {});
-    if (!loadSettings()) { updateSadTotal(); }
+    if (!loadSettings()) {
+      if (el('sync-base').checked) markAuto();
+      updateSadTotal();
+    }
   })();
   </script>
 </body>
