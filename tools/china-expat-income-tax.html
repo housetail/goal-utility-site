@@ -73,7 +73,7 @@
     </div>
 
     <section class="panel">
-      <form id="calc-form" class="tool-form">
+      <form id="calc-form" class="tool-form" novalidate>
         <div class="field">
           <span>Tax status</span>
           <div class="seg" id="resident-seg">
@@ -99,26 +99,26 @@
           <label class="field">社保缴费基数 Social-insurance base (CNY)
             <span id="social-range" class="range"></span>
             <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
-            <input id="social-base" type="number" step="100" />
+            <input id="social-base" type="text" inputmode="decimal" autocomplete="off" />
           </label>
           <label class="field">公积金缴存基数 Housing-fund base (CNY)
             <span id="housing-range" class="range"></span>
             <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
-            <input id="housing-base" type="number" step="100" />
+            <input id="housing-base" type="text" inputmode="decimal" autocomplete="off" />
           </label>
         </div>
         <label class="field">公积金缴存比例 Housing-fund rate (%)
           <span id="housing-rate-range" class="range"></span>
-          <input id="housing-rate" type="number" step="0.5" />
+          <input id="housing-rate" type="text" inputmode="decimal" autocomplete="off" />
         </label>
 
         <div class="subhead">Monthly income — list each month</div>
         <div class="fill-row">
           <label class="field">Fill all base (固定)
-            <input id="fill-base" type="number" step="100" placeholder="e.g. 30000" />
+            <input id="fill-base" type="text" inputmode="decimal" placeholder="e.g. 30000" />
           </label>
           <label class="field">Fill all bonus (浮动)
-            <input id="fill-bonus" type="number" step="100" placeholder="e.g. 0" />
+            <input id="fill-bonus" type="text" inputmode="decimal" placeholder="e.g. 0" />
           </label>
           <button type="button" class="btn secondary" id="fill-all">Apply to all 12</button>
         </div>
@@ -174,14 +174,23 @@
     var cny = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 2 });
     function el(id) { return document.getElementById(id); }
     function fmt(n) { return cny.format(n); }
+    // Parse a user-entered number string. Strips thousands separators (commas),
+    // whitespace and full-width minus signs so pasted values like "30,000" work.
+    // Returns NaN for empty or genuinely non-numeric input.
+    function parseNum(str) {
+      var s = String(str == null ? '' : str).replace(/[,\s]/g, '').replace(/[－−]/g, '-');
+      if (s === '') return NaN;
+      var v = parseFloat(s);
+      return isNaN(v) ? NaN : v;
+    }
 
     // ---------- build UI ----------
     function buildMonthly() {
       var html = '<table class="month-table"><thead><tr><th>Month</th><th>Base salary (固定)</th><th>Bonus (浮动)</th></tr></thead><tbody>';
       for (var i = 1; i <= 12; i++) {
         html += '<tr><td>' + MONTHS[i - 1] + '</td>' +
-          '<td><input type="number" id="base' + i + '" value="30000" step="100"></td>' +
-          '<td><input type="number" id="bonus' + i + '" value="0" step="100"></td></tr>';
+          '<td><input type="text" inputmode="decimal" id="base' + i + '" value="30000"></td>' +
+          '<td><input type="text" inputmode="decimal" id="bonus' + i + '" value="0"></td></tr>';
       }
       html += '</tbody></table>';
       el('monthly-table').innerHTML = html;
@@ -196,14 +205,14 @@
         var er = (savedRates && savedRates[k]) ? savedRates[k].er : d.er;
         var fx = d.empFixed ? ' <span class="fx">(+' + d.empFixed + '元)</span>' : '';
         html += '<tr><td>' + LABELS[k] + fx + '</td>' +
-          '<td><input type="number" step="0.1" data-k="' + k + '" data-side="emp" value="' + emp + '"></td>' +
-          '<td><input type="number" step="0.1" data-k="' + k + '" data-side="er" value="' + er + '"></td></tr>';
+          '<td><input type="text" inputmode="decimal" data-k="' + k + '" data-side="emp" value="' + emp + '"></td>' +
+          '<td><input type="text" inputmode="decimal" data-k="' + k + '" data-side="er" value="' + er + '"></td></tr>';
       });
       html += '</tbody></table>';
       el('social-rates').innerHTML = html;
     }
 
-    function firstMonthBase() { var b = parseFloat(el('base1').value); return isNaN(b) ? 0 : b; }
+    function firstMonthBase() { var b = parseNum(el('base1').value); return isNaN(b) ? 0 : b; }
     function defaultBase(rng) { var v = firstMonthBase() > 0 ? firstMonthBase() : 20000; return T.clamp(v, rng.baseLower, rng.baseUpper); }
 
     function renderCity(cityKey, opts) {
@@ -231,10 +240,10 @@
         var id = 'sad-' + k;
         html += '<div class="sad-item"><label class="sad-chk"><input type="checkbox" id="' + id + '-on"> ' + d.label +
           ' <span class="sad-note">' + d.note + '</span></label>';
-        if (d.hasCount) html += ' <input type="number" min="1" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="数量">';
+        if (d.hasCount) html += ' <input type="text" inputmode="decimal" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="数量">';
         else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">独生 3000</option><option value="0">非独 1500</option></select>';
         else if (d.tiers) html += ' <select id="' + id + '-tier">' + d.tiers.map(function (t) { return '<option value="' + t + '">' + t + '/月</option>'; }).join('') + '</select>';
-        else if (d.custom) html += ' <input type="number" min="0" id="' + id + '-amt" value="0" class="sad-num" title="月度估算">';
+        else if (d.custom) html += ' <input type="text" inputmode="decimal" id="' + id + '-amt" value="0" class="sad-num" title="月度估算">';
         html += '</div>';
       }
       el('sad-list').innerHTML = html;
@@ -267,21 +276,37 @@
     function getInputs() {
       var resident = el('resident-resident').checked;
       var city = el('city').value;
-      var socialBase = parseFloat(el('social-base').value) || 0;
-      var housingBase = parseFloat(el('housing-base').value) || 0;
-      var housingRate = parseFloat(el('housing-rate').value);
-      if (isNaN(housingRate)) housingRate = T.getCity(city).housing.rateDefault;
+      var bad = [];
+      function need(id, label, fallback) {
+        var v = parseNum(el(id).value);
+        if (isNaN(v)) {
+          if (fallback !== undefined) return fallback;
+          bad.push(label); return 0;
+        }
+        return v;
+      }
+      var socialBase = need('social-base', '社保缴费基数');
+      var housingBase = need('housing-base', '公积金缴存基数');
+      var hrVal = el('housing-rate').value;
+      var housingRate = (String(hrVal).trim() === '')
+        ? T.getCity(city).housing.rateDefault
+        : (function () { var v = parseNum(hrVal); if (isNaN(v)) bad.push('公积金缴存比例'); return isNaN(v) ? T.getCity(city).housing.rateDefault : v; })();
       var rateOverrides = {};
       ITEMS.forEach(function (k) {
-        rateOverrides[k] = {
-          emp: parseFloat(document.querySelector('input[data-k="' + k + '"][data-side="emp"]').value) || 0,
-          er: parseFloat(document.querySelector('input[data-k="' + k + '"][data-side="er"]').value) || 0
-        };
+        var e = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="emp"]').value);
+        var r = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="er"]').value);
+        if (isNaN(e)) { bad.push(LABELS[k] + ' 个人比例'); e = 0; }
+        if (isNaN(r)) { bad.push(LABELS[k] + ' 单位比例'); r = 0; }
+        rateOverrides[k] = { emp: e, er: r };
       });
       var monthly = [];
       for (var i = 1; i <= 12; i++) {
-        monthly.push({ base: parseFloat(el('base' + i).value) || 0, bonus: parseFloat(el('bonus' + i).value) || 0 });
+        var b = parseNum(el('base' + i).value), bo = parseNum(el('bonus' + i).value);
+        if (isNaN(b)) { bad.push(MONTHS[i - 1] + ' 基础工资'); b = 0; }
+        if (isNaN(bo)) { bad.push(MONTHS[i - 1] + ' 绩效奖金'); bo = 0; }
+        monthly.push({ base: b, bonus: bo });
       }
+      if (bad.length) { flash('请输入有效的数字：' + bad.join('、')); return null; }
       var sad = getSadSelections();
       var sadMonthly = T.calcSAD(sad);
       return { resident: resident, city: city, socialBase: socialBase, housingBase: housingBase, housingRate: housingRate, rateOverrides: rateOverrides, monthly: monthly, sadMonthly: sadMonthly, sad: sad };
@@ -402,7 +427,8 @@
       renderCity(el('city').value, {});
     });
     el('fill-all').addEventListener('click', function () {
-      var b = parseFloat(el('fill-base').value) || 0, bo = parseFloat(el('fill-bonus').value) || 0;
+      var b = parseNum(el('fill-base').value), bo = parseNum(el('fill-bonus').value);
+      if (isNaN(b)) b = 0; if (isNaN(bo)) bo = 0;
       for (var i = 1; i <= 12; i++) { el('base' + i).value = b; el('bonus' + i).value = bo; }
     });
     el('save-btn').addEventListener('click', saveSettings);
@@ -410,6 +436,7 @@
     el('calc-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var inp = getInputs();
+      if (!inp) return;
       var res = T.computeSchedule(inp);
       renderResult(res, inp);
     });
