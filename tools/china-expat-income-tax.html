@@ -139,16 +139,16 @@
 
         <div class="subhead"><span class="flow-num">1</span>Monthly income — list each month</div>
         <div class="fill-row">
-          <label class="field">Fill all base (固定)
+          <label class="field">Fill all base
             <input id="fill-base" type="text" inputmode="decimal" placeholder="e.g. 30000" />
           </label>
-          <label class="field">Fill all bonus (浮动)
+          <label class="field">Fill all bonus
             <input id="fill-bonus" type="text" inputmode="decimal" placeholder="e.g. 0" />
           </label>
           <button type="button" class="btn secondary" id="fill-all">Apply to all 12</button>
         </div>
         <label class="sync-field"><input type="checkbox" id="sync-base" checked />
-          <span>Auto-fill 五险一金 base from monthly base salary (用月薪自动填充社保/公积金基数)</span>
+          <span>Auto-fill 五险一金 base from monthly base salary</span>
         </label>
         <div id="monthly-table"></div>
 
@@ -235,7 +235,7 @@
 
     // ---------- build UI ----------
     function buildMonthly() {
-      var html = '<table class="month-table"><thead><tr><th>Month</th><th>Base salary (固定)</th><th>Bonus (浮动)</th></tr></thead><tbody>';
+      var html = '<table class="month-table"><thead><tr><th>Month</th><th>Base salary</th><th>Bonus</th></tr></thead><tbody>';
       for (var i = 1; i <= 12; i++) {
         html += '<tr><td>' + MONTHS[i - 1] + '</td>' +
           '<td><input type="text" inputmode="decimal" id="base' + i + '" value="30000"></td>' +
@@ -271,15 +271,15 @@
       var sb = el('social-base'), hb = el('housing-base'), hr = el('housing-rate');
       if (opts.socialBase != null) sb.value = opts.socialBase; else if (!sb.value) sb.value = defaultBase(city.social);
       sb.min = city.social.baseLower; sb.max = city.social.baseUpper;
-      el('social-range').textContent = 'Range ' + city.social.baseLower.toLocaleString() + ' – ' + city.social.baseUpper.toLocaleString() + ' (范围)';
+      el('social-range').textContent = 'Range ' + city.social.baseLower.toLocaleString() + ' – ' + city.social.baseUpper.toLocaleString();
       el('social-hint').href = T.SOCIAL_BASE_SRC;
       if (opts.housingBase != null) hb.value = opts.housingBase; else if (!hb.value) hb.value = defaultBase(city.housing);
       hb.min = city.housing.baseLower; hb.max = city.housing.baseUpper;
-      el('housing-range').textContent = 'Range ' + city.housing.baseLower.toLocaleString() + ' – ' + city.housing.baseUpper.toLocaleString() + ' (范围)';
+      el('housing-range').textContent = 'Range ' + city.housing.baseLower.toLocaleString() + ' – ' + city.housing.baseUpper.toLocaleString();
       el('housing-hint').href = T.HOUSING_BASE_SRC;
       if (opts.housingRate != null) hr.value = opts.housingRate; else if (!hr.value) hr.value = city.housing.rateDefault;
       hr.min = city.housing.rateMin; hr.max = city.housing.rateMax;
-      el('housing-rate-range').textContent = 'Range ' + city.housing.rateMin + '% – ' + city.housing.rateMax + '% (范围)';
+      el('housing-rate-range').textContent = 'Range ' + city.housing.rateMin + '% – ' + city.housing.rateMax + '%';
     }
 
     function buildSad() {
@@ -289,10 +289,10 @@
         var id = 'sad-' + k;
         html += '<div class="sad-item"><label class="sad-chk"><input type="checkbox" id="' + id + '-on"> ' + d.label +
           ' <span class="sad-note">' + d.note + '</span></label>';
-        if (d.hasCount) html += ' <input type="text" inputmode="decimal" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="Quantity (数量)">';
-        else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">Only child 3,000 (独生)</option><option value="0">Non-only 1,500 (非独)</option></select>';
+        if (d.hasCount) html += ' <input type="text" inputmode="decimal" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="Quantity">';
+        else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">Only child 3,000</option><option value="0">Non-only 1,500</option></select>';
         else if (d.tiers) html += ' <select id="' + id + '-tier">' + d.tiers.map(function (t) { return '<option value="' + t + '">' + t + '/month</option>'; }).join('') + '</select>';
-        else if (d.custom) html += ' <input type="text" inputmode="decimal" id="' + id + '-amt" value="0" class="sad-num" title="Monthly estimate (月度估算)">';
+        else if (d.custom) html += ' <input type="text" inputmode="decimal" id="' + id + '-amt" value="0" class="sad-num" title="Monthly estimate">';
         html += '</div>';
       }
       el('sad-list').innerHTML = html;
@@ -344,18 +344,18 @@
       ITEMS.forEach(function (k) {
         var e = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="emp"]').value);
         var r = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="er"]').value);
-        if (isNaN(e)) { bad.push(LABELS[k] + ' employee % (个人比例)'); e = 0; }
-        if (isNaN(r)) { bad.push(LABELS[k] + ' employer % (单位比例)'); r = 0; }
+        if (isNaN(e)) { bad.push(LABELS[k] + ' employee %'); e = 0; }
+        if (isNaN(r)) { bad.push(LABELS[k] + ' employer %'); r = 0; }
         rateOverrides[k] = { emp: e, er: r };
       });
       var monthly = [];
       for (var i = 1; i <= 12; i++) {
         var b = parseNum(el('base' + i).value), bo = parseNum(el('bonus' + i).value);
-        if (isNaN(b)) { bad.push(MONTHS[i - 1] + ' base salary (基础工资)'); b = 0; }
-        if (isNaN(bo)) { bad.push(MONTHS[i - 1] + ' bonus (绩效奖金)'); bo = 0; }
+        if (isNaN(b)) { bad.push(MONTHS[i - 1] + ' base salary'); b = 0; }
+        if (isNaN(bo)) { bad.push(MONTHS[i - 1] + ' bonus'); bo = 0; }
         monthly.push({ base: b, bonus: bo });
       }
-      if (bad.length) { flash('Please enter a valid number (请输入有效的数字): ' + bad.join('、')); return null; }
+      if (bad.length) { flash('Please enter a valid number: ' + bad.join('、')); return null; }
       var sad = getSadSelections();
       var sadMonthly = T.calcSAD(sad);
       return { resident: resident, city: city, socialBase: socialBase, housingBase: housingBase, housingRate: housingRate, rateOverrides: rateOverrides, monthly: monthly, sadMonthly: sadMonthly, sad: sad };
@@ -365,11 +365,11 @@
       var s = res.summary, h = res.housing, socEmp = res.social.empTotal;
       var html = '';
       html += '<div class="summary-cards">' +
-        card('Annual gross (全年税前)', fmt(s.yearGross)) +
+        card('Annual gross', fmt(s.yearGross)) +
         card('Emp. 五险一金 (emp. social & HF)', fmt(s.yearSocialEmp)) +
         card('Annual IIT (全年个税)', fmt(s.yearTax)) +
-        card('Annual take-home (全年到手)', fmt(s.yearTakeHome), true) +
-        card('Avg / month (月均到手)', fmt(s.avgMonthlyTakeHome), true) +
+        card('Annual take-home', fmt(s.yearTakeHome), true) +
+        card('Avg / month', fmt(s.avgMonthlyTakeHome), true) +
         '</div>';
 
       html += '<h3 style="margin:6px 0 8px;color:var(--primary-dark)">Monthly deductions (employee)</h3>';
@@ -383,35 +383,35 @@
       html += '</tbody></table>';
 
       html += '<h3 style="margin:18px 0 8px;color:var(--primary-dark)">Monthly breakdown</h3>';
-      var thCell = function (en, cn) { return '<th><span class="en">' + en + '</span><span class="cn">' + cn + '</span></th>'; };
+      var thCell = function (en, cn) { return '<th><span class="en">' + en + '</span>' + (cn ? '<span class="cn">' + cn + '</span>' : '') + '</th>'; };
       html += '<div class="table-scroll"><table class="month-table"><thead><tr>'
-        + thCell('Month', '月份')
-        + thCell('Pre-tax', '税前')
+        + thCell('Month', '')
+        + thCell('Pre-tax', '')
         + thCell('Social ins.*', '五险一金·个人')
         + thCell('Housing fund', '公积金·个人')
-        + thCell('Taxable*', inp.resident ? '累计应税' : '当月应税')
-        + thCell('IIT', '个税')
-        + thCell('Take-home', '到手')
+        + thCell('Taxable*', '')
+        + thCell('IIT', '')
+        + thCell('Take-home', '')
         + '</tr></thead><tbody>';
       res.months.forEach(function (m) {
         html += '<tr>'
-          + '<td data-label="Month (月份)">' + MONTHS[m.month - 1] + '</td>'
-          + '<td data-label="Pre-tax (税前)">' + fmt(m.gross) + '</td>'
+          + '<td data-label="Month">' + MONTHS[m.month - 1] + '</td>'
+          + '<td data-label="Pre-tax">' + fmt(m.gross) + '</td>'
           + '<td data-label="Social ins.* (五险一金·个人)">' + fmt(m.socialEmp - m.housingEmp) + '</td>'
           + '<td data-label="Housing fund (公积金·个人)">' + fmt(m.housingEmp) + '</td>'
-          + '<td data-label="Taxable* (应税)">' + fmt(m.taxable) + '</td>'
-          + '<td data-label="IIT (个税)">' + fmt(m.tax) + '</td>'
-          + '<td class="hl" data-label="Take-home (到手)">' + fmt(m.takeHome) + '</td>'
+          + '<td data-label="Taxable*">' + fmt(m.taxable) + '</td>'
+          + '<td data-label="IIT">' + fmt(m.tax) + '</td>'
+          + '<td class="hl" data-label="Take-home">' + fmt(m.takeHome) + '</td>'
           + '</tr>';
       });
       html += '<tfoot><tr>'
-        + '<td data-label="Year (全年)">全年</td>'
-        + '<td data-label="Pre-tax (税前)">' + fmt(s.yearGross) + '</td>'
+        + '<td data-label="Year">Year</td>'
+        + '<td data-label="Pre-tax">' + fmt(s.yearGross) + '</td>'
         + '<td data-label="Social ins.* (五险一金·个人)">' + fmt(socEmp * 12) + '</td>'
         + '<td data-label="Housing fund (公积金·个人)">' + fmt(h.emp * 12) + '</td>'
-        + '<td data-label="Taxable* (应税)">—</td>'
-        + '<td data-label="IIT (个税)">' + fmt(s.yearTax) + '</td>'
-        + '<td class="hl" data-label="Take-home (到手)">' + fmt(s.yearTakeHome) + '</td>'
+        + '<td data-label="Taxable*">—</td>'
+        + '<td data-label="IIT">' + fmt(s.yearTax) + '</td>'
+        + '<td class="hl" data-label="Take-home">' + fmt(s.yearTakeHome) + '</td>'
         + '</tr></tfoot>';
       html += '</table></div>';
       html += '<p class="table-legend">* Social ins. (五险一金·个人) excludes the housing fund, shown in its own column. Taxable = cumulative taxable income for residents, monthly taxable income for non-residents.</p>';

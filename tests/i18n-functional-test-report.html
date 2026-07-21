@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Test Report — Expat IIT Calculator (China) | i18n + Functional Audit</title>
+<style>
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; max-width:960px; margin:32px auto; padding:0 20px; color:#1a1a1a; line-height:1.6; }
+  h1 { border-bottom:3px solid #1f4e8c; padding-bottom:8px; color:#1f4e8c; }
+  h2 { color:#1f4e8c; margin-top:28px; }
+  h3 { color:#333; margin-top:18px; }
+  .meta { background:#f5f7fa; border-left:4px solid #c79a3a; padding:12px 16px; border-radius:6px; font-size:14px; margin-bottom:24px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+  th { background:#1f4e8c; color:#fff; text-align:left; padding:10px 12px; }
+  td { padding:8px 12px; border-bottom:1px solid #ddd; vertical-align:top; }
+  tr:nth-child(even) td { background:#fafbfc; }
+  .badge { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+  .badge-crit { background:#fee; color:#c00; } .badge-warn { background:#fff3cd; #856404; color:#856404; } .badge-ok { background:#d4edda; #155724; color:#155724; } .badge-info { background:#d1ecf1; #0c5460; color:#0c5460; }
+  code { background:#eee; padding:2px 5px; border-radius:4px; font-size:13px; }
+  pre { background:#262626; color:#e0e0e0; padding:16px; border-radius:8px; overflow-x:auto; font-size:13px; }
+  pre code { background:none; padding:0; }
+  .pass { color:#155724; } .fail { color:#c00; }
+  .section { border:1px solid #ddd; border-radius:8px; padding:16px 20px; margin:16px 0; }
+  .section.pass { border-color:#28a745; background:#fafffa; }
+  .section.fail { border-color:#dc3545; background:#fff5f5; }
+  .section.warn { border-color:#ffc107; background:#fffef5; }
+  ul { padding-left:20px; }
+  li { margin-bottom:4px; }
+</style>
+</head>
+<body>
+
+<h1>🧪 Test Report — Expat Income Tax &amp; Take-Home Calculator (China)</h1>
+
+<div class="meta">
+  <strong>Date:</strong> 2026-07-21 &nbsp;|&nbsp;
+  <strong>URL:</strong> <code>https://housetail.github.io/tools/china-expat-income-tax.html</code><br>
+  <strong>Tool:</strong> agent-browser v0.26.0 (Playwright / Chromium, real browser rendering)<br>
+  <strong>Scope:</strong> i18n pure-Chinese audit + functional end-to-end test<br>
+  <strong>Browser:</strong> Chromium headless (agent-browser daemon)
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>1. Functional Test Results</h2>
+<div class="section pass">
+
+<table>
+<tr><th style="width:42%">Test Case</th><th>Status</th><th>Detail</th></tr>
+<tr><td>Page loads without errors</td><td><span class="pass">✅ PASS</span></td><td>Title renders correctly, no console errors captured</td></tr>
+<tr><td>Form UI fully rendered</td><td><span class="pass">✅ PASS</span></td><td>Tax status, City selector, 12-month income table, social rates table, SAD checkboxes all present in snapshot</td></tr>
+<tr><td>"Fill all base" → type value</td><td><span class="pass">✅ PASS</span></td><td>Typed 50000 into #fill-base successfully</td></tr>
+<tr><td>"Apply to all 12" fills months</td><td><span class="pass">✅ PASS</span></td><td>All 12 month rows show base=50000 after click</td></tr>
+<tr><td>Auto-fill sync (sync-base checkbox)</td><td><span class="pass">✅ PASS</span></td><td>social-base=50000, housing-base=50000, synced=true after Apply to all 12</td></tr>
+<tr><td>Calculate produces result</td><td><span class="pass">✅ PASS</span></td><td>Result HTML length=6675 chars, 5 summary cards, 12 month rows</td></tr>
+<tr><td>Cumulative tax computation correct</td><td><span class="pass">✅ PASS</span></td><td>¥50K/mo × 12mo = ¥600K gross → ¥80,290.39 IIT (cumulative method), ¥423,744.23 take-home</td></tr>
+<tr><td>Summary cards render with labels</td><td><span class="pass">✅ PASS</span></td><td>Annual gross, Emp. 五险一金, Annual IIT, Annual take-home, Avg/month — all visible</td></tr>
+<tr><td>Monthly deductions table</td><td><span class="pass">✅ PASS</span></td><td>Pension/Medical/Unemployment/Housing fund/SAD items with CNY values</td></tr>
+<tr><td>Monthly breakdown table (12 rows)</td><td><span class="pass">✅ PASS</span></td><td>Two-row header (EN/CN), Pre-tax / Social ins.* / Housing fund / Taxable* / IIT / Take-home columns</td></tr>
+<tr><td>Screenshot captures full page</td><td><span class="pass">✅ PASS</span></td><td>Initial state + calculated result screenshots saved</td></tr>
+</table>
+
+<p><strong>Functional verdict:</strong> All 11 tests pass. The calculator works correctly end-to-end.</p>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<h2>2. Pure-Chinese Text Audit (Primary Focus)</h2>
+<p><em>Rule applied:</em> "Only professional vocabulary terms may use Chinese supplementary text (e.g. 五险一金, 公积金). Non-technical common words should NOT have Chinese glosses (e.g. Fill all bonus (浮动) is unnecessary). Pure Chinese strings (no English at all) would block English readers."</p>
+
+<h3 class="badge badge-ok" style="display:inline-block;padding:4px 14px;">✅ GOOD NEWS: No pure-Chinese strings found</h3>
+<p>Every visible label on the page has English as its primary or leading text. There are zero standalone Chinese-only labels that would prevent comprehension by English readers.</p>
+
+<h3>⚠️ Issues Found: Unnecessary Chinese supplements on non-professional terms</h3>
+<p>The following items have Chinese parentheticals that serve no purpose for English readers and add visual noise. Per your instruction, these should be removed.</p>
+
+<!-- ── Category A: Must Fix ── -->
+<h3 class="badge badge-crit" style="display:inline-block;padding:4px 14px;margin-top:18px;">Category A — MUST FIX (you explicitly flagged this pattern)</h3>
+
+<table>
+<tr><th>#</th><th>Current Text (with unnecessary CN)</th><th>Location (line)</th><th>Proposed Fix</th></tr>
+<tr>
+  <td>A1</td>
+  <td><code>Fill all base (固定)</code></td>
+  <td>L142 (label)<br>L238 (table th: <code>Base salary (固定)</code>)</td>
+  <td><code>Fill all base</code> / <code>Base salary</code><br><small>Remove (固定) from both places</small></td>
+</tr>
+<tr>
+  <td>A2</td>
+  <td><code>Fill all bonus (浮动)</code></td>
+  <td>L145 (label)<br>L238 (table th: <code>Bonus (浮动)</code>)</td>
+  <td><code>Fill all bonus</code> / <code>Bonus</code><br><small>Remove (浮动) from both places</small></td>
+</tr>
+<tr>
+  <td>A3</td>
+  <td><code>Range 7,162 – 35,811 (范围)</code><br>(×3 instances)</td>
+  <td>L274 (social range)<br>L278 (housing range)<br>L282 (rate range)</td>
+  <td><code>Range 7,162 – 35,811</code> etc.<br><small>Remove (范围) from all 3</small></td>
+</tr>
+<tr>
+  <td>A4</td>
+  <td><code>Auto-fill 五险一金 base from monthly base salary<br>&nbsp;&nbsp;(用月薪自动填充社保/公积金基数)</code></td>
+  <td>L151 (checkbox label)</td>
+  <td><code>Auto-fill 五险一金 base from monthly base salary</code><br><small>Remove the entire long Chinese clause in parens.<br>五险一金 stays as it's a professional term.</small></td>
+</tr>
+</table>
+
+<!-- ── Category B: Should Fix ── -->
+<h3 class="badge badge-warn" style="display:inline-block;padding:4px 14px;margin-top:18px;">Category B — SHOULD FIX (unnecessary glosses on common words)</h3>
+
+<table>
+<tr><th>#</th><th>Current Text</th><th>Location</th><th>Proposed Fix</th></tr>
+<tr>
+  <td>B1</td>
+  <td>Error label:<br><code>'... employee % (个人比例)'</code></td>
+  <td>L347 (getInputs error array)</td>
+  <td><code>'... employee %'</code></td>
+</tr>
+<tr>
+  <td>B2</td>
+  <td>Error label:<br><code>'... employer % (单位比例)'</code></td>
+  <td>L348</td>
+  <td><code>'... employer %'</code></td>
+</tr>
+<tr>
+  <td>B3</td>
+  <td>Error label:<br><code>'Jan base salary (基础工资)'</code></td>
+  <td>L354 (×12 months)</td>
+  <td><code>'Jan base salary'</code></td>
+</tr>
+<tr>
+  <td>B4</td>
+  <td>Error label:<br><code>'Jan bonus (绩效奖金)'</code></td>
+  <td>L355 (×12 months)</td>
+  <td><code>'Jan bonus'</code></td>
+</tr>
+<tr>
+  <td>B5</td>
+  <td>Tooltip:<br><code>title="Quantity (数量)"</code></td>
+  <td>L292</td>
+  <td><code>title="Quantity"</code></td>
+</tr>
+<tr>
+  <td>B6</td>
+  <td>Tooltip:<br><code>title="Monthly estimate (月度估算)"</code></td>
+  <td>L295</td>
+  <td><code>title="Monthly estimate"</code></td>
+</tr>
+<tr>
+  <td>B7</td>
+  <td>Flash error message:<br><code>Please enter a valid number (请输入有效的数字): ...</code></td>
+  <td>L358</td>
+  <td><code>Please enter a valid number: ...</code></td>
+</tr>
+</table>
+
+<!-- ── Category C: Consider ── -->
+<h3 class="badge badge-info" style="display:inline-block;padding:4px 14px;margin-top:18px;">Category C — CONSIDER (borderline, design decision needed)</h3>
+
+<table>
+<tr><th>#</th><th>Current Text</th><th>Location</th><th>Discussion</th></tr>
+<tr>
+  <td>C1</td>
+  <td>Table header .cn sub-row for non-professional columns:<br><code>月份 / 税前 / 应税 / 个税 / 到手</code></td>
+  <td>L388–394 (thCell function)</td>
+  <td>These are under English headers (not pure Chinese), but per your rule only professional terms need supplement.<br>
+  <b>Option 1 (strict):</b> Keep .cn ONLY for <code>五险一金·个人</code> and <code>公积金·个人</code>; remove for Month/Pre-tax/Taxable/IIT/Take-home.<br>
+  <b>Option 2 (keep):</b> Keep as-is — English is primary (.en bold), .cn is muted small secondary line that doesn't impede reading.</td>
+</tr>
+<tr>
+  <td>C2</td>
+  <td>Summary card labels:<br><code>Annual gross (全年税前)</code><br><code>Annual take-home (全年到手)</code><br><code>Avg / month (月均到手)</code></td>
+  <td>L368–373 (card calls)</td>
+  <td>全年税前/全年到手 are financial domain terms but not strictly professional jargon like 五险一金. Could trim to English-only, or keep as they aid bilingual users.</td>
+</tr>
+<tr>
+  <td>C3</td>
+  <td>SAD dropdown options:<br><code>Only child 3,000 (独生)</code><br><code>Non-only 1,500 (非独)</code></td>
+  <td>L293</td>
+  <td>独生/非独 clarify the tax rule distinction. Borderline useful for accuracy but not strictly necessary.</td>
+</tr>
+<tr>
+  <td>C4</td>
+  <td>SAD detail notes:<br><code>(每孩 1000/月)</code>, <code>(职业资格 3600/年)</code>,<br><code>(超15000部分，年上限80000)</code></td>
+  <td>L290–295 (SAD data in tax-calc.js)</td>
+  <td>These are official policy numbers with Chinese descriptions. Domain-specific enough to keep, but could be translated.</td>
+</tr>
+<tr>
+  <td>C5</td>
+  <td>FAQ summary titles:<br><code>Can expats claim special additional deductions (专项附加扣除)?</code></td>
+  <<td>L200 (FAQ)</td>
+  <td>专项附加扣除 is the official term name. Acceptable as professional terminology.</td>
+</tr>
+</table>
+
+<!-- ── Category D: Keep As Is ── -->
+<h3 class="badge badge-ok" style="display:inline-block;padding:4px 14px;margin-top:18px;">✅ Category D — KEEP AS IS (professional terms, acceptable)</h3>
+<ul>
+  <li><code>五险一金</code> — core domain term (social insurance + housing fund); appears in lede, section heading, sync label, FAQ, summary card</li>
+  <li><code>公积金</code> / <code>公积金缴存基数</code> / <code>公积金缴存比例</code> — professional terms</li>
+  <li><code>社保缴费基数</code> — professional term in label + hint</li>
+  <li><code>居民</code> / <code>非居民</code> — tax resident status (legal term)</li>
+  <li><code>累计预扣法</code> — technical method name in hint</li>
+  <li><code>专项附加扣除</code> — official SAD term</li>
+  <li><code>个税</code> — abbreviation of individual income tax (common shorthand)</li>
+  <li><code>Pension 养老</code>, <code>Medical 医疗</code>, <code>Unemployment 失业</code>, <code>Work injury 工伤</code>, <code>Maternity 生育</code> — LABELS object (social insurance item names)</li>
+  <li><code>Housing fund (公积金)</code> — in deductions table row label</li>
+  <li><code>税务局</code> — in FAQ disclaimer (official body name)</li>
+  <li><code>全国代表值</code> — Generic city option</li>
+  <li>JSON-LD structured data Chinese terms — invisible to users, used by search engines</li>
+</ul>
+
+<!-- ════════════════════════════════════════ -->
+<h2>3. Summary</h2>
+<div class="section warn">
+<table>
+<tr><th>Metric</th><th>Count</th></tr>
+<tr><td>Total issues found</td><td><strong>17</strong> (A:4 + B:7 + C:5 + D:0)</td></tr>
+<tr><td>Must-fix (Category A)</td><td><strong>4 items, ~8 source locations</strong></td></tr>
+<tr><td>Should-fix (Category B)</td><td><strong>7 items</strong></td></tr>
+<tr><td>Consider (Category C)</td><td><strong>5 items</strong> (design choice)</td></tr>
+<tr><td>Pure-Chinese (no English) strings</td><td><strong>0 ✅</strong></td></tr>
+<tr><td>Functional tests passed</td><td><strong>11/11 ✅</strong></td></tr>
+</table>
+</div>
+
+<h3>Recommendation</h3>
+<ol>
+  <li><strong>Fix Category A immediately</strong> — 4 changes, removes the exact patterns you called out ((固定), (浮动), (范围), long clause). This is low-risk text-only edits.</li>
+  <li><strong>Fix Category B next</strong> — 7 more text-only cleanup items (error messages, tooltips).</li>
+  <li><strong>Decide on Category C</strong> — especially whether to trim table .cn sub-rows to only professional columns. I can implement either option once you decide.</li>
+</ol>
+
+<hr>
+<p style="color:#888;font-size:13px;">
+  Test environment: agent-browser v0.26.0 · Chromium · macOS ARM64 · Page fetched live from GitHub Pages CDN<br>
+  Screenshots saved: <code>/tmp/expat_initial.png</code>, <code>/tmp/expat_result.png</code>, <code>/tmp/expat_calc_result.png</code>
+</p>
+
+</body>
+</html>
