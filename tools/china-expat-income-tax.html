@@ -505,6 +505,9 @@
       var lab = el(id).closest('label.field');
       if (lab) lab.classList.remove('auto-filled');
       el('sync-base').checked = false;
+      ['social-base', 'housing-base'].forEach(function (other) {
+        if (other !== id) { var l = el(other).closest('label.field'); if (l) l.classList.remove('auto-filled'); }
+      });
     }
     el('fill-all').addEventListener('click', function () {
       var b = parseNum(el('fill-base').value), bo = parseNum(el('fill-bonus').value);
