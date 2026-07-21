@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Expat Income Tax &amp; Take-Home Calculator (China) — China Finance Tools</title>
-  <meta name="description" content="Estimate your monthly individual income tax in China as a foreigner: enter monthly salary &amp; bonus, city social-insurance rates, and special additional deductions to see 五险一金, IIT and take-home pay." />
+  <meta name="description" content="Estimate your monthly individual income tax in China as a foreigner: enter monthly salary &amp; bonus, city social insurance &amp; housing fund (五险一金) rates, and special additional deductions to see IIT and take-home pay." />
   <meta name="google-adsense-account" content="ca-pub-8247564773527384" />
   <link rel="stylesheet" href="../assets/site.css" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8247564773527384" crossorigin="anonymous"></script>
@@ -15,7 +15,7 @@
   { "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
     {"@type":"Question","name":"Who pays individual income tax (IIT) in China as a foreigner?","acceptedAnswer":{"@type":"Answer","text":"Both tax residents (183-day rule) and non-residents pay IIT on China-sourced income. Residents are also taxed on worldwide income."}},
     {"@type":"Question","name":"What is the 5,000 RMB monthly threshold?","acceptedAnswer":{"@type":"Answer","text":"It is the basic deduction (基本减除费用). Residents can further deduct 五险一金 (social insurance + housing fund) and special additional deductions before tax."}},
-    {"@type":"Question","name":"Do 五险一金 apply to foreigners?","acceptedAnswer":{"@type":"Answer","text":"In most cities foreigners participate in pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB."}},
+    {"@type":"Question","name":"Do social insurance & housing fund (五险一金) apply to foreigners?","acceptedAnswer":{"@type":"Answer","text":"In most cities foreigners participate in pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB."}},
     {"@type":"Question","name":"Can expats claim special additional deductions (专项附加扣除)?","acceptedAnswer":{"@type":"Answer","text":"They are available to tax residents. Non-residents generally cannot claim them, so switch the resident/non-resident toggle accordingly."}},
     {"@type":"Question","name":"How is the tax computed?","acceptedAnswer":{"@type":"Answer","text":"Residents use the cumulative withholding method (累计预扣法) on a progressive annual table; non-residents use the simplified monthly method."}},
     {"@type":"Question","name":"Is this an official calculation?","acceptedAnswer":{"@type":"Answer","text":"No. It is an estimate for planning only. Verify rates, bases and rules with the local tax bureau (税务局) and a qualified advisor."}}
@@ -69,7 +69,7 @@
   <main class="tool-main">
     <div class="tool-head">
       <h1>Expat Income Tax &amp; Take-Home Calculator</h1>
-      <p class="lede">For foreigners working in China: enter your monthly salary &amp; bonus, your city's 五险一金 rates, and any special additional deductions to see monthly IIT and take-home pay.</p>
+      <p class="lede">For foreigners working in China: enter your monthly salary &amp; bonus, your city's social insurance &amp; housing fund (五险一金) rates, and any special additional deductions to see monthly IIT and take-home pay.</p>
     </div>
 
     <section class="panel">
@@ -80,7 +80,7 @@
             <label class="seg-opt on"><input type="radio" name="resident" id="resident-resident" value="resident" checked> Resident (居民)</label>
             <label class="seg-opt"><input type="radio" name="resident" id="resident-nonresident" value="nonresident"> Non-resident (非居民)</label>
           </div>
-          <span class="hint">Residents use cumulative withholding (累计预扣法); non-residents use the simplified monthly method. Special additional deductions apply to residents.</span>
+          <span class="hint">Residents use the cumulative withholding method (累计预扣法); non-residents use the simplified monthly method. Special additional deductions apply to residents.</span>
         </div>
 
         <label class="field">City
@@ -93,21 +93,21 @@
           </select>
         </label>
 
-        <div class="subhead">五险一金 — social insurance &amp; housing fund</div>
+        <div class="subhead">Social insurance &amp; housing fund (五险一金)</div>
         <div id="social-rates"></div>
         <div class="row">
-          <label class="field">社保缴费基数 Social-insurance base (CNY)
+          <label class="field">Social-insurance base (社保缴费基数, CNY)
             <span id="social-range" class="range"></span>
-            <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
+            <a id="social-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
             <input id="social-base" type="text" inputmode="decimal" autocomplete="off" />
           </label>
-          <label class="field">公积金缴存基数 Housing-fund base (CNY)
+          <label class="field">Housing-fund base (公积金缴存基数, CNY)
             <span id="housing-range" class="range"></span>
-            <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="核对政府公布数据">ⓘ</a>
+            <a id="housing-hint" class="hint-btn" href="#" target="_blank" rel="noopener" title="Verify against official source">ⓘ</a>
             <input id="housing-base" type="text" inputmode="decimal" autocomplete="off" />
           </label>
         </div>
-        <label class="field">公积金缴存比例 Housing-fund rate (%)
+        <label class="field">Housing-fund rate (公积金缴存比例, %)
           <span id="housing-rate-range" class="range"></span>
           <input id="housing-rate" type="text" inputmode="decimal" autocomplete="off" />
         </label>
@@ -124,7 +124,7 @@
         </div>
         <div id="monthly-table"></div>
 
-        <div class="subhead">专项附加扣除 — special additional deductions</div>
+        <div class="subhead">Special additional deductions (专项附加扣除)</div>
         <div id="sad-list"></div>
         <p class="msg" id="sad-total"></p>
 
@@ -146,10 +146,10 @@
     <section class="faq">
       <h2>Frequently asked questions</h2>
       <details><summary>Who pays IIT in China as a foreigner?</summary><p>Both tax residents (the 183-day rule) and non-residents pay IIT on China-sourced income. Residents are also taxed on worldwide income; non-residents only on China-sourced income.</p></details>
-      <details><summary>What is the 5,000 RMB monthly threshold?</summary><p>It is the basic deduction (基本减除费用). Residents can further deduct 五险一金 and special additional deductions before computing tax.</p></details>
-      <details><summary>Do 五险一金 apply to foreigners?</summary><p>In most cities foreigners join pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB.</p></details>
-      <details><summary>Can expats claim special additional deductions?</summary><p>They are available to tax residents. Non-residents generally cannot claim them, so keep the toggle on "Resident" if you qualify.</p></details>
-      <details><summary>How is the tax computed?</summary><p>Residents use cumulative withholding (累计预扣法) on a progressive annual table, which correctly handles monthly variable bonuses. Non-residents use the simplified monthly method.</p></details>
+      <details><summary>What is the 5,000 RMB monthly threshold?</summary><p>It is the basic deduction (基本减除费用). Residents can further deduct social insurance &amp; housing fund (五险一金) and special additional deductions (专项附加扣除) before computing tax.</p></details>
+      <details><summary>Do social insurance &amp; housing fund (五险一金) apply to foreigners?</summary><p>In most cities foreigners join pension, medical and unemployment insurance plus the housing fund. Rates and base caps differ by city — e.g. Beijing 2026 caps the social base at 7,162–35,811 RMB.</p></details>
+      <details><summary>Can expats claim special additional deductions (专项附加扣除)?</summary><p>They are available to tax residents. Non-residents generally cannot claim them, so keep the toggle on "Resident" if you qualify.</p></details>
+      <details><summary>How is the tax computed?</summary><p>Residents use the cumulative withholding method (累计预扣法) on a progressive annual table, which correctly handles monthly variable bonuses. Non-residents use the simplified monthly method.</p></details>
       <details><summary>Is this an official calculation?</summary><p>No. It is an estimate for planning only. Verify rates, bases and rules with the local tax bureau (税务局) and a qualified advisor.</p></details>
     </section>
   </main>
@@ -203,7 +203,7 @@
         var d = city.social.items[k];
         var emp = (savedRates && savedRates[k]) ? savedRates[k].emp : d.emp;
         var er = (savedRates && savedRates[k]) ? savedRates[k].er : d.er;
-        var fx = d.empFixed ? ' <span class="fx">(+' + d.empFixed + '元)</span>' : '';
+        var fx = d.empFixed ? ' <span class="fx">(+' + d.empFixed + ' CNY)</span>' : '';
         html += '<tr><td>' + LABELS[k] + fx + '</td>' +
           '<td><input type="text" inputmode="decimal" data-k="' + k + '" data-side="emp" value="' + emp + '"></td>' +
           '<td><input type="text" inputmode="decimal" data-k="' + k + '" data-side="er" value="' + er + '"></td></tr>';
@@ -222,15 +222,15 @@
       var sb = el('social-base'), hb = el('housing-base'), hr = el('housing-rate');
       if (opts.socialBase != null) sb.value = opts.socialBase; else if (!sb.value) sb.value = defaultBase(city.social);
       sb.min = city.social.baseLower; sb.max = city.social.baseUpper;
-      el('social-range').textContent = '范围 ' + city.social.baseLower.toLocaleString() + ' – ' + city.social.baseUpper.toLocaleString();
-      el('social-hint').href = city.social.verify;
+      el('social-range').textContent = 'Range ' + city.social.baseLower.toLocaleString() + ' – ' + city.social.baseUpper.toLocaleString() + ' (范围)';
+      el('social-hint').href = T.SOCIAL_BASE_SRC;
       if (opts.housingBase != null) hb.value = opts.housingBase; else if (!hb.value) hb.value = defaultBase(city.housing);
       hb.min = city.housing.baseLower; hb.max = city.housing.baseUpper;
-      el('housing-range').textContent = '范围 ' + city.housing.baseLower.toLocaleString() + ' – ' + city.housing.baseUpper.toLocaleString();
-      el('housing-hint').href = city.housing.verify;
+      el('housing-range').textContent = 'Range ' + city.housing.baseLower.toLocaleString() + ' – ' + city.housing.baseUpper.toLocaleString() + ' (范围)';
+      el('housing-hint').href = T.HOUSING_BASE_SRC;
       if (opts.housingRate != null) hr.value = opts.housingRate; else if (!hr.value) hr.value = city.housing.rateDefault;
       hr.min = city.housing.rateMin; hr.max = city.housing.rateMax;
-      el('housing-rate-range').textContent = '范围 ' + city.housing.rateMin + '% – ' + city.housing.rateMax + '%';
+      el('housing-rate-range').textContent = 'Range ' + city.housing.rateMin + '% – ' + city.housing.rateMax + '% (范围)';
     }
 
     function buildSad() {
@@ -240,10 +240,10 @@
         var id = 'sad-' + k;
         html += '<div class="sad-item"><label class="sad-chk"><input type="checkbox" id="' + id + '-on"> ' + d.label +
           ' <span class="sad-note">' + d.note + '</span></label>';
-        if (d.hasCount) html += ' <input type="text" inputmode="decimal" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="数量">';
-        else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">独生 3000</option><option value="0">非独 1500</option></select>';
-        else if (d.tiers) html += ' <select id="' + id + '-tier">' + d.tiers.map(function (t) { return '<option value="' + t + '">' + t + '/月</option>'; }).join('') + '</select>';
-        else if (d.custom) html += ' <input type="text" inputmode="decimal" id="' + id + '-amt" value="0" class="sad-num" title="月度估算">';
+        if (d.hasCount) html += ' <input type="text" inputmode="decimal" id="' + id + '-count" value="' + d.defaultCount + '" class="sad-num" title="Quantity (数量)">';
+        else if (d.onlyChild) html += ' <select id="' + id + '-oc"><option value="1">Only child 3,000 (独生)</option><option value="0">Non-only 1,500 (非独)</option></select>';
+        else if (d.tiers) html += ' <select id="' + id + '-tier">' + d.tiers.map(function (t) { return '<option value="' + t + '">' + t + '/month</option>'; }).join('') + '</select>';
+        else if (d.custom) html += ' <input type="text" inputmode="decimal" id="' + id + '-amt" value="0" class="sad-num" title="Monthly estimate (月度估算)">';
         html += '</div>';
       }
       el('sad-list').innerHTML = html;
@@ -285,28 +285,28 @@
         }
         return v;
       }
-      var socialBase = need('social-base', '社保缴费基数');
-      var housingBase = need('housing-base', '公积金缴存基数');
+      var socialBase = need('social-base', 'Social-insurance base (社保缴费基数)');
+      var housingBase = need('housing-base', 'Housing-fund base (公积金缴存基数)');
       var hrVal = el('housing-rate').value;
       var housingRate = (String(hrVal).trim() === '')
         ? T.getCity(city).housing.rateDefault
-        : (function () { var v = parseNum(hrVal); if (isNaN(v)) bad.push('公积金缴存比例'); return isNaN(v) ? T.getCity(city).housing.rateDefault : v; })();
+        : (function () { var v = parseNum(hrVal); if (isNaN(v)) bad.push('Housing-fund rate (公积金缴存比例)'); return isNaN(v) ? T.getCity(city).housing.rateDefault : v; })();
       var rateOverrides = {};
       ITEMS.forEach(function (k) {
         var e = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="emp"]').value);
         var r = parseNum(document.querySelector('input[data-k="' + k + '"][data-side="er"]').value);
-        if (isNaN(e)) { bad.push(LABELS[k] + ' 个人比例'); e = 0; }
-        if (isNaN(r)) { bad.push(LABELS[k] + ' 单位比例'); r = 0; }
+        if (isNaN(e)) { bad.push(LABELS[k] + ' employee % (个人比例)'); e = 0; }
+        if (isNaN(r)) { bad.push(LABELS[k] + ' employer % (单位比例)'); r = 0; }
         rateOverrides[k] = { emp: e, er: r };
       });
       var monthly = [];
       for (var i = 1; i <= 12; i++) {
         var b = parseNum(el('base' + i).value), bo = parseNum(el('bonus' + i).value);
-        if (isNaN(b)) { bad.push(MONTHS[i - 1] + ' 基础工资'); b = 0; }
-        if (isNaN(bo)) { bad.push(MONTHS[i - 1] + ' 绩效奖金'); bo = 0; }
+        if (isNaN(b)) { bad.push(MONTHS[i - 1] + ' base salary (基础工资)'); b = 0; }
+        if (isNaN(bo)) { bad.push(MONTHS[i - 1] + ' bonus (绩效奖金)'); bo = 0; }
         monthly.push({ base: b, bonus: bo });
       }
-      if (bad.length) { flash('请输入有效的数字：' + bad.join('、')); return null; }
+      if (bad.length) { flash('Please enter a valid number (请输入有效的数字): ' + bad.join('、')); return null; }
       var sad = getSadSelections();
       var sadMonthly = T.calcSAD(sad);
       return { resident: resident, city: city, socialBase: socialBase, housingBase: housingBase, housingRate: housingRate, rateOverrides: rateOverrides, monthly: monthly, sadMonthly: sadMonthly, sad: sad };
@@ -314,14 +314,14 @@
 
     function renderResult(res, inp) {
       var s = res.summary, h = res.housing, socEmp = res.social.empTotal;
-      var headTaxable = inp.resident ? '累计应纳税所得额' : '当月应税所得额';
+      var headTaxable = inp.resident ? 'Cumulative taxable income (累计应纳税所得额)' : 'Monthly taxable income (当月应税所得额)';
       var html = '';
       html += '<div class="summary-cards">' +
-        card('全年税前 Annual gross', fmt(s.yearGross)) +
-        card('全年五险一金(个人) Employee 五险一金', fmt(s.yearSocialEmp)) +
-        card('全年个税 Annual IIT', fmt(s.yearTax)) +
-        card('全年到手 Annual take-home', fmt(s.yearTakeHome), true) +
-        card('月均到手 Avg / month', fmt(s.avgMonthlyTakeHome), true) +
+        card('Annual gross (全年税前)', fmt(s.yearGross)) +
+        card('Employee social insurance & housing fund (五险一金)', fmt(s.yearSocialEmp)) +
+        card('Annual IIT (全年个税)', fmt(s.yearTax)) +
+        card('Annual take-home (全年到手)', fmt(s.yearTakeHome), true) +
+        card('Avg / month (月均到手)', fmt(s.avgMonthlyTakeHome), true) +
         '</div>';
 
       html += '<h3 style="margin:6px 0 8px;color:var(--primary-dark)">Monthly deductions (employee)</h3>';
@@ -330,12 +330,12 @@
         if (res.social.items[k].emp > 0 || T.getCity(inp.city).social.items[k].empFixed)
           html += '<tr><td>' + LABELS[k] + '</td><td>' + fmt(res.social.items[k].emp) + '</td></tr>';
       });
-      html += '<tr><td>Housing fund 公积金</td><td>' + fmt(h.emp) + '</td></tr>';
-      html += '<tr><td><strong>Special additional deductions 专项附加扣除</strong></td><td><strong>' + fmt(inp.sadMonthly) + '</strong></td></tr>';
+      html += '<tr><td>Housing fund (公积金)</td><td>' + fmt(h.emp) + '</td></tr>';
+      html += '<tr><td><strong>Special additional deductions (专项附加扣除)</strong></td><td><strong>' + fmt(inp.sadMonthly) + '</strong></td></tr>';
       html += '</tbody></table>';
 
       html += '<h3 style="margin:18px 0 8px;color:var(--primary-dark)">Monthly breakdown</h3>';
-      html += '<div class="table-scroll"><table class="month-table"><thead><tr><th>Month</th><th>税前收入</th><th>五险一金(个人)</th><th>公积金(个人)</th><th>' + headTaxable + '</th><th>当月个税</th><th>到手</th></tr></thead><tbody>';
+      html += '<div class="table-scroll"><table class="month-table"><thead><tr><th>Month</th><th>Pre-tax income (税前收入)</th><th>Social ins. &amp; housing fund (五险一金, employee)</th><th>Housing fund (公积金, employee)</th><th>' + headTaxable + '</th><th>Monthly IIT (当月个税)</th><th>Take-home (到手)</th></tr></thead><tbody>';
       res.months.forEach(function (m) {
         html += '<tr><td>' + MONTHS[m.month - 1] + '</td>' +
           '<td>' + fmt(m.gross) + '</td>' +

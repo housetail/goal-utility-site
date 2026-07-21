@@ -111,17 +111,22 @@
     }
   };
 
+  // Authoritative source pages for the two contribution-base fields (user-supplied).
+  var SOCIAL_BASE_SRC = 'https://znhd.neimenggu.chinatax.gov.cn:8443/znhdzsknsrd/detail?id=649313';
+  var HOUSING_BASE_SRC = 'https://gjj.beijing.gov.cn/web/zwgk61/2024zcwj/436433461/743765441/index.html';
+
   // ---- 专项附加扣除 (Special Additional Deductions), 2026 standard monthly ----
+  // Labels are English-first with Chinese in parentheses; notes follow the same rule.
   // hasCount: multiply by number of children; onlyChild: 3000 vs 1500; tiers: rent by city;
   // custom: free monthly estimate (大病医疗 is actual, not fixed).
   var SAD = {
-    childEducation: { label: '子女教育', perMonth: 1000, hasCount: true, defaultCount: 1, note: '每孩 1000/月' },
-    continuingEdu:  { label: '继续教育（学历）', perMonth: 400, hasCount: false, note: '职业资格 3600/年另计' },
-    seriousIllness: { label: '大病医疗（据实）', perMonth: 0, custom: true, note: '超 15000 部分，年上限 80000，可填月度估算' },
-    housingLoan:    { label: '住房贷款利息', perMonth: 1000, hasCount: false, note: '1000/月（与租金二选一）' },
-    housingRent:    { label: '住房租金', perMonth: 1500, tiers: [1500, 1100, 800], note: '直辖市 1500 / 市辖区>100万人 1100 / 其他 800' },
-    elderlyCare:    { label: '赡养老人', perMonth: 3000, onlyChild: true, note: '独生 3000 / 非独 1500' },
-    infantCare:     { label: '3岁以下婴幼儿照护', perMonth: 1000, hasCount: true, defaultCount: 1, note: '每孩 1000/月' }
+    childEducation: { label: 'Child education (子女教育)', perMonth: 1000, hasCount: true, defaultCount: 1, note: 'Per child 1,000/month (每孩 1000/月)' },
+    continuingEdu:  { label: 'Continuing education (继续教育)', perMonth: 400, hasCount: false, note: 'Vocational qualification 3,600/year (职业资格 3600/年)' },
+    seriousIllness: { label: 'Serious-illness medical (大病医疗)', perMonth: 0, custom: true, note: 'Actual amount above 15,000; annual cap 80,000 (超15000部分，年上限80000)' },
+    housingLoan:    { label: 'Housing loan interest (住房贷款利息)', perMonth: 1000, hasCount: false, note: '1,000/month (与租金二选一 / choose one of loan or rent)' },
+    housingRent:    { label: 'Housing rent (住房租金)', perMonth: 1500, tiers: [1500, 1100, 800], note: 'Municipality 1,500 / district>1M 1,100 / other 800' },
+    elderlyCare:    { label: 'Elderly care (赡养老人)', perMonth: 3000, onlyChild: true, note: 'Only child 3,000 / non-only 1,500 (独生3000 / 非独1500)' },
+    infantCare:     { label: 'Infant care under 3 (3岁以下婴幼儿照护)', perMonth: 1000, hasCount: true, defaultCount: 1, note: 'Per child 1,000/month (每孩 1000/月)' }
   };
 
   // ---- Tax brackets ----
@@ -307,6 +312,8 @@
   return {
     CITIES: CITIES,
     SAD: SAD,
+    SOCIAL_BASE_SRC: SOCIAL_BASE_SRC,
+    HOUSING_BASE_SRC: HOUSING_BASE_SRC,
     ANNUAL_BRACKETS: ANNUAL_BRACKETS,
     MONTHLY_BRACKETS: MONTHLY_BRACKETS,
     BASIC_DEDUCTION: BASIC_DEDUCTION,
